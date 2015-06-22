@@ -1,0 +1,4 @@
+
+Instantiating a new `Megamenu#` should apply aria attributes. Remove them from the fixture.
+
+JAWS behavior remains imperfect. Category names and item counts are not conveyed.

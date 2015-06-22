@@ -1,0 +1,17 @@
+html {
+  font-family: Helvetica, sans-serif;
+}
+body {
+  padding: 10px;
+}
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+*:focus {
+  outline-width: 1px;
+}
+.hidden {
+  display: none;
+}

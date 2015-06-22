@@ -1,0 +1,29 @@
+{
+  "name": "a11y-examples",
+  "version": "0.1.0",
+  "readme": "readme.md",
+  "description": "Examples of accessible widgets and design patterns",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag"
+  ],
+  "author": "Matt Isner <isnerms@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "gulp": "^3.8.11",
+    "gulp-jade": "^1.0.1",
+    "jade": "^1.10.0"
+  },
+  "devDependencies": {
+    "bower": "^1.4.1",
+    "duo": "0.8.4",
+    "fs-extra": "^0.18.4",
+    "gulp-stylus": "^2.0.3",
+    "through2": "^0.6.5"
+  }
+}

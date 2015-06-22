@@ -1,0 +1,41 @@
+
+extends ../layout
+
+block content
+  h1 Menu
+
+  h2 Megamenu
+
+  #myMegamenu.navbar.navbar-default
+    ul.nav.navbar-nav(role="menubar")
+      each name in ['Jerry', 'Elaine', 'George', 'Kramer']
+        li.dropdown(role="presentation")
+          a.dropdown-toggle(
+            id="#{name}-trigger"
+            role="menuitem"
+            aria-haspopup="true"
+            aria-controls="#{name}-dropdown"
+            aria-expanded="false"
+            href="#") #{name}
+
+          ul.dropdown-menu(id="#{name}-dropdown"
+            role="menu"
+            aria-labelledby="#{name}-trigger")
+
+            each list, i in ['First', 'Second', 'Third']
+              li(role="presentation")
+                h3(id="#{list}-#{name}-label") #{list}
+                ul(aria-labelledby="#{list}-#{name}-label")
+                  each num, ii in [1, 2, 3]
+                    li(role="presentation")
+                      a(role="menuitem"
+                        href="##{list}-#{name}-sample-#{ii}")
+                        | Sample
+                  if (i < 2)
+                    li.divider(role="seperator")
+
+block scripts
+  script(src="index.js")
+
+append styles
+  link(rel="stylesheet" href="index.css")

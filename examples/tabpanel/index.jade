@@ -1,0 +1,47 @@
+
+extends ../layout
+
+block content
+  h1 Tab Panel
+
+  a(href="#before") Before
+
+  #tabpanel-widget
+    ul.nav.nav-tabs
+      li: a(href="#" data-panel="jerry-panel") Jerry
+      li: a(href="#" data-panel="elaine-panel") Elaine
+      li: a(href="#" data-panel="george-panel") George
+      li: a(href="#" data-panel="kramer-panel") Kramer
+    .panels
+      #jerry-panel.panel.panel-default
+        .panel-body
+          p Source:&nbsp;
+            a(href="https://en.wikipedia.org/wiki/Jerry_Seinfeld_(character)")
+              | Jerry's Wikipedia page
+          p Jerome "Jerry" Seinfeld is the protagonist of the American television sitcom Seinfeld (1989&dash;1998). The straight man among his group of friends, this semi-fictionalized version of comedian Jerry Seinfeld was named after, co-created by, based on, and played by Seinfeld himself. The series revolves around Jerry's misadventures with his best friend George Costanza, neighbor Cosmo Kramer, and ex-girlfriend Elaine Benes. He is usually the voice of reason amidst his friends' antics and the focal point of the foursome's relationship.
+      #elaine-panel.panel.panel-default
+        .panel-body
+          p Source:&nbsp;
+            a(href="https://en.wikipedia.org/wiki/Elaine_Benes")
+              | Elaine's Wikipedia page
+          p Elaine Marie Benes is a fictional character on the American television sitcom Seinfeld (1989&dash;1998), played by Julia Louis-Dreyfus. Elaine's best friend is her ex-boyfriend Jerry Seinfeld, and she is also good friends with George Costanza and Cosmo Kramer. Julia Louis-Dreyfus received critical acclaim for her performance as Elaine, winning an Emmy, a Golden Globe and five SAG Awards.
+      #george-panel.panel.panel-default
+        .panel-body
+          p Source:&nbsp;
+            a(href="https://en.wikipedia.org/wiki/George_Costanza")
+              | George's Wikipedia page
+          p George Louis Costanza is a character in the American television sitcom Seinfeld (1989&dash;1998), played by Jason Alexander. He has variously been described as a "short, stocky, slow-witted, bald man" (by Elaine Benes and Costanza himself), and "Lord of the Idiots" (by Costanza himself). George and Jerry were junior high school friends and remained friends after. He is friends with Jerry Seinfeld, Cosmo Kramer, and Elaine Benes. George appears in every episode except "The Pen" (third season).
+      #kramer-panel.panel.panel-default
+        .panel-body
+          p Source:&nbsp;
+            a(href="https://en.wikipedia.org/wiki/Cosmo_Kramer")
+              | Kramer's Wikipedia page
+          p Cosmo Kramer, usually referred to as simply "Kramer", is a fictional character on the American television sitcom Seinfeld (1989&dash;1998), played by Michael Richards. The character is loosely based on comedian Kenny Kramer, Larry David's former neighbor across the hall. Kramer is the friend and neighbor of main character Jerry Seinfeld, residing in Apartment 5B, and is friends with George Costanza and Elaine Benes. Of the series' four central characters, only Kramer has no visible means of support; what few jobs he holds seem to be nothing more than larks.
+
+  a(href="#after") After
+
+block scripts
+  script(src="index.js")
+
+block styles
+  link(rel="stylesheet" href="index.css")

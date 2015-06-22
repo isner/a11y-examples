@@ -1,0 +1,25 @@
+
+@require '../global'
+
+#myMegamenu
+  background-color #E4E4E4
+
+  .dropdown-toggle[aria-expanded=true],
+  .dropdown-toggle:focus
+    background-color #fff
+
+  .dropdown-toggle:focus
+    outline 2px solid #777
+
+  .dropdown-menu
+    display none
+
+    &.open
+      display block
+
+    h3, li
+      font-size 1em
+      margin 0.5em 0.7em
+
+      a
+        padding 0.2em 0.3em

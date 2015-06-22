@@ -1,0 +1,39 @@
+html {
+  font-family: Helvetica, sans-serif;
+}
+body {
+  padding: 10px;
+}
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+*:focus {
+  outline-width: 1px;
+}
+#myMegamenu {
+  background-color: #e4e4e4;
+}
+#myMegamenu .dropdown-toggle[aria-expanded=true],
+#myMegamenu .dropdown-toggle:focus {
+  background-color: #fff;
+}
+#myMegamenu .dropdown-toggle:focus {
+  outline: 2px solid #777;
+}
+#myMegamenu .dropdown-menu {
+  display: none;
+}
+#myMegamenu .dropdown-menu.open {
+  display: block;
+}
+#myMegamenu .dropdown-menu h3,
+#myMegamenu .dropdown-menu li {
+  font-size: 1em;
+  margin: 0.5em 0.7em;
+}
+#myMegamenu .dropdown-menu h3 a,
+#myMegamenu .dropdown-menu li a {
+  padding: 0.2em 0.3em;
+}

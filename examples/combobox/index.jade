@@ -1,0 +1,17 @@
+
+extends ../layout
+
+block content
+	h1 Combobox
+	
+	h2 With Editable Text Field
+	div(id="cb" role="combobox" aria-expanded="false")
+		input(type="text")
+		button(tabindex="-1") &darr;
+		div(role="listbox")
+			ol(role="presentation")
+				li(role="option") Jerry
+				li(role="option") Elaine
+				li(role="option") George
+				li(role="option") Kramer
+		
