@@ -34,6 +34,7 @@ gulp.task('scripts', function () {
 			duo.entry(entry)
 			.run(function (err, data) {
 				if (err) throw err;
+
 				var target = path.join(buildDir, exampleDir, entryFile);
 				fs.writeFile(target, data, function (err) {
 					if (err) throw err;

@@ -94,26 +94,34 @@ var selector = '#tabpanel-widget';
 
 /**
  * Create a Tabpanel using the selector provided.
- *
- * PRE-REQS:
- * 1) each panel MUST have an id
- * 2) each tab MUST have a "data-panel" attribute
- *    with the id of its corresponding panel
- * 3) a css declaration SHOULD be available that
- *    applies display="hidden"
  */
 
 var el = document.querySelector(selector);
 
 var tp = new Tabpanel(el, {
-  tablist: 'ul.nav.nav-tabs',
-  tabs: 'li > a',
-  // Used to get the panel for a given tab
+  // A css selector that will find a single tablist
+  // in the context of `el`.
+  tablistSelector: 'ul.nav.nav-tabs',
+  // A css selector that will find all tabs in the
+  // context of  the tablist element.
+  tabSelector: 'li > a',
+  // A function which, when given a tab's element
+  // reference, will find and return an element
+  // reference for that tab's corresponding panel.
   panelGetter: function (tab) {
     var id = tab.getAttribute('data-panel');
     return query('#' + id);
   },
-  hiddenClass: 'hidden'
+  // [optional] A class that can be applied to
+  // panels in order to hide them. If unsupplied,
+  // will default to setting inline styles.
+  hiddenClass: 'hidden',
+  // [optional] The index of the tab that should
+  // be selected by default.
+  defaultIndex: 2,
+  selectFun: function () {
+    console.log('my custom function was called');
+  }
 });
 
 console.log(tp);
@@ -150,8 +158,6 @@ exports.engine = function(obj){
  */
 
 var Emitter = require('component/Emitter');
-var events = require('component/events');
-var query = require('component/query');
 var Tablist = require('./tablist');
 
 /**
@@ -164,13 +170,13 @@ module.exports = Tabpanel;
  * Creates a new instance of `Tabpanel`.
  *
  * @param {HTMLElement} el
- * @param {Object} selectors
+ * @param {Object} options
  * @api public
  */
 
-function Tabpanel(el, selectors) {
+function Tabpanel(el, options) {
   this.el = el;
-  this.tablist = new Tablist(selectors, el);
+  this.tablist = new Tablist(options, el);
 }
 
 /**
@@ -179,7 +185,7 @@ function Tabpanel(el, selectors) {
 
 Emitter(Tabpanel.prototype);
 
-}, {"component/Emitter":4,"component/events":5,"component/query":2,"./tablist":6}],
+}, {"component/Emitter":4,"./tablist":5}],
 4: [function(require, module, exports) {
 
 /**
@@ -345,6 +351,413 @@ Emitter.prototype.hasListeners = function(event){
 
 }, {}],
 5: [function(require, module, exports) {
+
+/**
+ * Module dependencies.
+ */
+
+var Emitter = require('component/emitter');
+var query = require('component/query');
+var Tab = require('./tab');
+
+/**
+ * Expose `Tablist`.
+ */
+
+module.exports = Tablist;
+
+/**
+ * Create a new `Tablist`.
+ *
+ * @param {Object} options
+ * @param {HTMLElement} el
+ * @api public
+ */
+
+function Tablist(options, el) {
+  var self = this;
+  this.el = query(options.tablistSelector, el);
+  this.defaultIndex = options.defaultIndex;
+  this.el.setAttribute('role', 'tablist');
+
+  // Create Tabs for this Tablist.
+
+  this.tabs = [];
+  var tabs = query.all(options.tabSelector, this.el);
+  [].slice.call(tabs).forEach(function (el) {
+    var tab = new Tab(el, options);
+    self.tabs.push(tab);
+
+    var parent = tab.el.parentNode;
+    while (parent != this.el) {
+      tab.el.parentNode.setAttribute('role', 'presentation');
+      parent = parent.parentNode;
+    }
+  });
+
+  this.init();
+}
+
+/**
+ * Mixin `Emitter`.
+ */
+
+Emitter(Tablist.prototype);
+
+/**
+ * Define the default selected Tab,
+ * and bind listener to affect Tablist when a Tab
+ * is selected.
+ *
+ * @return {Tablist}
+ * @api public
+ */
+
+Tablist.prototype.init = function () {
+  var self = this;
+  this.selectedIndex = this.defaultIndex;
+
+  this.tabs.forEach(function (tab, i) {
+    if (i == self.selectedIndex) {
+      tab.select();
+    }
+    else {
+      tab.deselect();
+    }
+
+    tab
+    .on('clicked', function (selectedTab) {
+      self.tabs.forEach(function (tab, i) {
+        if (tab == selectedTab) {
+          self.selectedIndex = i;
+          tab.select();
+          self.deselectAllExcept(tab);
+          tab.el.focus();
+        }
+      });
+    })
+    .on('navigated', function (dir) {
+      switch (dir) {
+        case 'prev':
+          self.selectedIndex = self.selectedIndex === 0
+            ? self.tabs.length - 1
+            : self.selectedIndex - 1;
+          break;
+        case 'next':
+          self.selectedIndex = self.selectedIndex === self.tabs.length - 1
+            ? 0
+            : self.selectedIndex + 1;
+          break;
+      }
+      var tab = self.tabs[self.selectedIndex];
+      tab.select();
+      self.deselectAllExcept(tab);
+      tab.el.focus();
+    });
+
+  });
+
+  return this;
+};
+
+/**
+ * Deselect all Tabs in the Tablist except a given Tab.
+ *
+ * @param {Tab} exceptTab
+ * @return {Tablist}
+ * @api private
+ */
+
+Tablist.prototype.deselectAllExcept = function (exceptTab) {
+  this.tabs.forEach(function (tab) {
+    if (tab != exceptTab) {
+      tab.deselect();
+    }
+  });
+  return this;
+};
+
+}, {"component/emitter":6,"component/query":2,"./tab":7}],
+6: [function(require, module, exports) {
+
+/**
+ * Expose `Emitter`.
+ */
+
+module.exports = Emitter;
+
+/**
+ * Initialize a new `Emitter`.
+ *
+ * @api public
+ */
+
+function Emitter(obj) {
+  if (obj) return mixin(obj);
+};
+
+/**
+ * Mixin the emitter properties.
+ *
+ * @param {Object} obj
+ * @return {Object}
+ * @api private
+ */
+
+function mixin(obj) {
+  for (var key in Emitter.prototype) {
+    obj[key] = Emitter.prototype[key];
+  }
+  return obj;
+}
+
+/**
+ * Listen on the given `event` with `fn`.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.on =
+Emitter.prototype.addEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+  (this._callbacks['$' + event] = this._callbacks['$' + event] || [])
+    .push(fn);
+  return this;
+};
+
+/**
+ * Adds an `event` listener that will be invoked a single
+ * time then automatically removed.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.once = function(event, fn){
+  function on() {
+    this.off(event, on);
+    fn.apply(this, arguments);
+  }
+
+  on.fn = fn;
+  this.on(event, on);
+  return this;
+};
+
+/**
+ * Remove the given callback for `event` or all
+ * registered callbacks.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.off =
+Emitter.prototype.removeListener =
+Emitter.prototype.removeAllListeners =
+Emitter.prototype.removeEventListener = function(event, fn){
+  this._callbacks = this._callbacks || {};
+
+  // all
+  if (0 == arguments.length) {
+    this._callbacks = {};
+    return this;
+  }
+
+  // specific event
+  var callbacks = this._callbacks['$' + event];
+  if (!callbacks) return this;
+
+  // remove all handlers
+  if (1 == arguments.length) {
+    delete this._callbacks['$' + event];
+    return this;
+  }
+
+  // remove specific handler
+  var cb;
+  for (var i = 0; i < callbacks.length; i++) {
+    cb = callbacks[i];
+    if (cb === fn || cb.fn === fn) {
+      callbacks.splice(i, 1);
+      break;
+    }
+  }
+  return this;
+};
+
+/**
+ * Emit `event` with the given args.
+ *
+ * @param {String} event
+ * @param {Mixed} ...
+ * @return {Emitter}
+ */
+
+Emitter.prototype.emit = function(event){
+  this._callbacks = this._callbacks || {};
+  var args = [].slice.call(arguments, 1)
+    , callbacks = this._callbacks['$' + event];
+
+  if (callbacks) {
+    callbacks = callbacks.slice(0);
+    for (var i = 0, len = callbacks.length; i < len; ++i) {
+      callbacks[i].apply(this, args);
+    }
+  }
+
+  return this;
+};
+
+/**
+ * Return array of callbacks for `event`.
+ *
+ * @param {String} event
+ * @return {Array}
+ * @api public
+ */
+
+Emitter.prototype.listeners = function(event){
+  this._callbacks = this._callbacks || {};
+  return this._callbacks['$' + event] || [];
+};
+
+/**
+ * Check if this emitter has `event` handlers.
+ *
+ * @param {String} event
+ * @return {Boolean}
+ * @api public
+ */
+
+Emitter.prototype.hasListeners = function(event){
+  return !! this.listeners(event).length;
+};
+
+}, {}],
+7: [function(require, module, exports) {
+
+/**
+ * Module dependencies.
+ */
+
+var Emitter = require('component/emitter');
+var events = require('component/events');
+var Panel = require('./panel');
+
+/**
+ * Expose `Tab`.
+ */
+
+module.exports = Tab;
+
+/**
+ * Creates a new Tab.
+ *
+ * @param {HTMLElement} el
+ * @param {Object} options
+ * @api public
+ */
+
+function Tab(el, options) {
+  this.el = el;
+  this.panel = new Panel(options.panelGetter(el), options);
+  this.selectFun = options.selectFun;
+
+  this.events = events(el, this);
+  this.events.bind('click');
+  this.events.bind('keydown');
+
+  this.el.setAttribute('aria-controls', this.panel.el.id);
+  this.el.setAttribute('role', 'tab');
+}
+
+/**
+ * Mixin `Emitter`.
+ */
+
+Emitter(Tab.prototype);
+
+/**
+ * Handle clicks on the Tab.
+ *
+ * @param {ClickEvent} e
+ * @return {Tab}
+ * @api private
+ */
+
+Tab.prototype.onclick = function (e) {
+  this.emit('clicked', this);
+  return this;
+};
+
+/**
+ * Select this Tab.
+ * Execute any custom function specified during config.
+ *
+ * @return {Tab}
+ * @api public
+ */
+
+Tab.prototype.select = function () {
+  this.el.setAttribute('tabindex', '0');
+  this.el.setAttribute('aria-selected', 'true');
+  this.panel.show();
+
+  // Execute any custom function specified during config.
+  var selectFun = this.selectFun;
+  if (selectFun && typeof selectFun == 'function') {
+    this.selectFun();
+  }
+
+  return this;
+};
+
+/**
+ * Deselect this Tab.
+ *
+ * @return {Tab}
+ * @api public
+ */
+
+Tab.prototype.deselect = function () {
+  this.el.setAttribute('tabindex', '-1');
+  this.el.setAttribute('aria-selected', 'false');
+  this.panel.hide();
+  return this;
+};
+
+/**
+ * Handles keydown events on a given Tab.
+ *
+ * @param {KeydownEvent} e
+ * @return {Tab}
+ * @api private
+ */
+
+Tab.prototype.onkeydown = function (e) {
+  var key = e.which || e.keyCode;
+  // Left/Up pressed
+  if (~[37,38].indexOf(key)) {
+    e.preventDefault();
+    this.emit('navigated', 'prev');
+  }
+  // Right/Down pressed
+  else if (~[39,40].indexOf(key)) {
+    e.preventDefault();
+    this.emit('navigated', 'next');
+  }
+};
+
+}, {"component/emitter":6,"component/events":8,"./panel":9}],
+8: [function(require, module, exports) {
 
 /**
  * Module dependencies.
@@ -522,8 +935,8 @@ function parse(event) {
   }
 }
 
-}, {"event":7,"delegate":8}],
-7: [function(require, module, exports) {
+}, {"event":10,"delegate":11}],
+10: [function(require, module, exports) {
 var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
     unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
     prefix = bind !== 'addEventListener' ? 'on' : '';
@@ -560,7 +973,7 @@ exports.unbind = function(el, type, fn, capture){
   return fn;
 };
 }, {}],
-8: [function(require, module, exports) {
+11: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
@@ -604,8 +1017,8 @@ exports.unbind = function(el, type, fn, capture){
   event.unbind(el, type, fn, capture);
 };
 
-}, {"closest":9,"event":7}],
-9: [function(require, module, exports) {
+}, {"closest":12,"event":10}],
+12: [function(require, module, exports) {
 var matches = require('matches-selector')
 
 module.exports = function (element, selector, checkYoSelf, root) {
@@ -626,8 +1039,8 @@ module.exports = function (element, selector, checkYoSelf, root) {
   }
 }
 
-}, {"matches-selector":10}],
-10: [function(require, module, exports) {
+}, {"matches-selector":13}],
+13: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
@@ -676,70 +1089,13 @@ function match(el, selector) {
 }
 
 }, {"query":2}],
-6: [function(require, module, exports) {
+9: [function(require, module, exports) {
 
 /**
  * Module dependencies.
  */
 
-var query = require('component/query');
-var Tab = require('./tab');
-
-/**
- * Expose `Tablist`.
- */
-
-module.exports = Tablist;
-
-/**
- * Create a new `Tablist`.
- *
- * @param {Object} options
- * @param {HTMLElement} el
- * @api private
- */
-
-function Tablist(options, el) {
-  var self = this;
-  this.el = query(options.tablist, el);
-  this.el.setAttribute('role', 'tablist');
-
-  this.tabs = [];
-  var tabs = query.all(options.tabs, this.el);
-  [].slice.call(tabs).forEach(function (el) {
-    var tab = new Tab(el, options);
-    self.tabs.push(tab);
-  });
-}
-
-}, {"component/query":2,"./tab":11}],
-11: [function(require, module, exports) {
-
-/**
- * Module dependencies.
- */
-
-var query = require('component/query');
-var Panel = require('./panel');
-
-/**
- * Expose `Tab`.
- */
-
-module.exports = Tab;
-
-function Tab(el, options) {
-  this.el = el;
-  this.panel = new Panel(options.panelGetter(el), options);
-}
-
-}, {"component/query":2,"./panel":12}],
-12: [function(require, module, exports) {
-
-/**
- * Module dependencies.
- */
-
+var rndid = require('stephenmathieson/rndid');
 var classes = require('component/classes');
 
 /**
@@ -748,22 +1104,122 @@ var classes = require('component/classes');
 
 module.exports = Panel;
 
+/**
+ * Create a new instance of `Panel`.
+ *
+ * @param {HTMLElement} el
+ * @param {Object} options
+ * @api public
+ */
+
 function Panel(el, options) {
   this.el = el;
-  this.options = options;
+  this.hiddenClass = options.hiddenClass || null;
+  this.el.setAttribute('role', 'tabpanel');
+  this.el.id = this.el.id || rndid();
 }
 
+/**
+ * Show this Panel.
+ * Prefers to use #hiddenClass supplied by options,
+ * but default to settings inline style.
+ *
+ * @return {Panel}
+ * @api public
+ */
+
 Panel.prototype.hide = function () {
-  if (this.options.hiddenClass) {
-    classes(this.el).add(this.options.hiddenClass);
+  if (this.hiddenClass) {
+    classes(this.el).add(this.hiddenClass);
   }
   else {
     this.el.style.display = 'none';
   }
+  return this;
 };
 
-}, {"component/classes":13}],
-13: [function(require, module, exports) {
+/**
+ * Hide this Panel.
+ * Prefers to use #hiddenClass supplied by options,
+ * but default to settings inline style.
+ *
+ * @return {Panel}
+ * @api public
+ */
+
+Panel.prototype.show = function () {
+  if (this.hiddenClass) {
+    classes(this.el).remove(this.hiddenClass);
+  }
+  else {
+    this.el.style.display = 'block';
+  }
+  return this;
+};
+
+}, {"stephenmathieson/rndid":14,"component/classes":15}],
+14: [function(require, module, exports) {
+
+/**
+ * Expose `rndid`.
+ */
+
+exports = module.exports = rndid;
+
+/**
+ * Default ID length.
+ */
+
+exports.defaultLength = 7;
+
+/**
+ * Return a guaranteed unique id of the provided
+ * `length`, optionally prefixed with `prefix`.
+ *
+ * If no length is provided, will use
+ * `rndid.defaultLength`.
+ *
+ * @api private
+ * @param {String} [prefix]
+ * @param {Number} [length]
+ * @return {String}
+ */
+
+function rndid(prefix, length) {
+  if ('number' == typeof prefix)
+    length = prefix, prefix = '';
+  length = length || exports.defaultLength;
+  var id = (prefix || '') + str(length);
+  if (document.getElementById(id)) return rndid(prefix, length);
+  return id;
+}
+
+/**
+ * Generate a random alpha-char.
+ *
+ * @api private
+ * @return {String}
+ */
+
+function character() {
+  return String.fromCharCode(Math.floor(Math.random() * 25) + 97);
+}
+
+/**
+ * Generate a random alpha-string of `len` characters.
+ *
+ * @api private
+ * @param {Number} len
+ * @return {String}
+ */
+
+function str(len) {
+  for (var i = 0, s = ''; i < len; i++) s += character();
+  return s;
+}
+
+}, {}],
+15: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
@@ -952,8 +1408,8 @@ ClassList.prototype.contains = function(name){
     : !! ~index(this.array(), name);
 };
 
-}, {"indexof":14}],
-14: [function(require, module, exports) {
+}, {"indexof":16}],
+16: [function(require, module, exports) {
 module.exports = function(arr, obj){
   if (arr.indexOf) return arr.indexOf(obj);
   for (var i = 0; i < arr.length; ++i) {

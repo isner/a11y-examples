@@ -4,8 +4,6 @@
  */
 
 var Emitter = require('component/Emitter');
-var events = require('component/events');
-var query = require('component/query');
 var Tablist = require('./tablist');
 
 /**
@@ -18,13 +16,13 @@ module.exports = Tabpanel;
  * Creates a new instance of `Tabpanel`.
  *
  * @param {HTMLElement} el
- * @param {Object} selectors
+ * @param {Object} options
  * @api public
  */
 
-function Tabpanel(el, selectors) {
+function Tabpanel(el, options) {
   this.el = el;
-  this.tablist = new Tablist(selectors, el);
+  this.tablist = new Tablist(options, el);
 }
 
 /**

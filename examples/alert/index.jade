@@ -2,4 +2,22 @@
 extends ../layout
 
 block content
-	
+  h1 Alert Example
+
+  .panel.panel-default
+    .panel-heading
+      span#label What is the Answer to The Ultimate Question of Life, the Universe, and Everything?
+    .panel-body
+      form
+        .input-group
+          input.form-control(type="text" aria-labelledby="label")
+          span.input-group-btn
+            button.btn.btn-default(type="submit") Submit
+    .panel-body
+      .alert.hidden(role="alert")
+
+block scripts
+  script(src="index.js")
+
+block styles
+  link(rel="stylesheet" href="index.css")

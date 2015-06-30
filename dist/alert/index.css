@@ -15,8 +15,6 @@ ul {
 .hidden {
   display: none;
 }
-[role=tab][aria-selected=true] {
-  border-color: #eee #eee #ddd;
-  text-decoration: none;
-  background-color: #eee;
+.bold {
+  font-weight: 600;
 }
