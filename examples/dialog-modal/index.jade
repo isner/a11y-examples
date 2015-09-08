@@ -2,4 +2,26 @@
 extends ../layout
 
 block content
-	
+  .page-header
+    h1 Dialog Modal Example
+
+  .panel.panel-default
+    .panel-heading
+      span Click "Why we need this" to display a dialog modal
+    .panel-body
+      p#email-label Email address
+      .form-group
+        .input-group
+          input.form-control(type="text" placeholder="Email address" aria-labelledby="email-label")
+          //- span.input-group-btn
+            //- button#why.btn.btn-default Why we need this
+        a#why(role="button" tabindex="0") Why we need your email address
+      .form-group
+        .btn-group
+          button.btn.btn-default(type="submit" disabled="disabled") Submit
+
+block scripts
+  script(src="index.js")
+
+block styles
+  link(rel="stylesheet" href="index.css")

@@ -99,29 +99,73 @@ var selector = '#tabpanel-widget';
 var el = document.querySelector(selector);
 
 var tp = new Tabpanel(el, {
-  // A css selector that will find a single tablist
-  // in the context of `el`.
+
+  /**
+   * A css selector that will find a single tablist
+   * in the context of `el`.
+   *
+   * @type {String}
+   */
+
   tablistSelector: 'ul.nav.nav-tabs',
-  // A css selector that will find all tabs in the
-  // context of  the tablist element.
+
+  /**
+   * A css selector that will find all tabs in the
+   * context of  the tablist element.
+   *
+   * @type {String}
+   */
+
   tabSelector: 'li > a',
-  // A function which, when given a tab's element
-  // reference, will find and return an element
-  // reference for that tab's corresponding panel.
+
+  /**
+   * A function which, when given a tab's element
+   * reference, will find and return an element
+   * reference for that tab's corresponding panel.
+   *
+   * @param {HTMLElement} tab
+   * @return {HTMLElement}
+   * @api private
+   */
+
   panelGetter: function (tab) {
     var id = tab.getAttribute('data-panel');
     return query('#' + id);
   },
-  // [optional] A class that can be applied to
-  // panels in order to hide them. If unsupplied,
-  // will default to setting inline styles.
+
+  /**
+   * [optional]
+   * A class that can be applied to panels in order
+   * to hide them. If unsupplied, will default to
+   * setting inline styles.
+   *
+   * @type {String}
+   */
+
   hiddenClass: 'hidden',
-  // [optional] The index of the tab that should
-  // be selected by default.
+
+  /**
+   * [optional]
+   * The index of the tab that should be selected
+   * by default.
+   *
+   * @type {Number}
+   */
+
   defaultIndex: 2,
-  selectFun: function () {
-    console.log('my custom function was called');
+
+  /**
+   * [optional]
+   * Called each time a tab is selected.
+   *
+   * @param {Tab} tab
+   * @api private
+   */
+
+  selectFun: function (tab) {
+    console.log('"%s" tab selected', tab.el.innerText);
   }
+
 });
 
 console.log(tp);
@@ -714,7 +758,7 @@ Tab.prototype.select = function () {
   // Execute any custom function specified during config.
   var selectFun = this.selectFun;
   if (selectFun && typeof selectFun == 'function') {
-    this.selectFun();
+    this.selectFun(this);
   }
 
   return this;
@@ -1019,24 +1063,37 @@ exports.unbind = function(el, type, fn, capture){
 
 }, {"closest":12,"event":10}],
 12: [function(require, module, exports) {
+/**
+ * Module Dependencies
+ */
+
 var matches = require('matches-selector')
 
-module.exports = function (element, selector, checkYoSelf, root) {
-  element = checkYoSelf ? {parentNode: element} : element
+/**
+ * Export `closest`
+ */
 
-  root = root || document
+module.exports = closest
 
-  // Make sure `element !== document` and `element != null`
-  // otherwise we get an illegal invocation
-  while ((element = element.parentNode) && element !== document) {
-    if (matches(element, selector))
-      return element
-    // After `matches` on the edge case that
-    // the selector matches the root
-    // (when the root is not the document)
-    if (element === root)
-      return
+/**
+ * Closest
+ *
+ * @param {Element} el
+ * @param {String} selector
+ * @param {Element} scope (optional)
+ */
+
+function closest (el, selector, scope) {
+  scope = scope || document.documentElement;
+
+  // walk up the dom
+  while (el && el !== scope) {
+    if (matches(el, selector)) return el;
+    el = el.parentNode;
   }
+
+  // check scope for match
+  return matches(el, selector) ? el : null;
 }
 
 }, {"matches-selector":13}],

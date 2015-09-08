@@ -69,7 +69,7 @@ Tab.prototype.select = function () {
   // Execute any custom function specified during config.
   var selectFun = this.selectFun;
   if (selectFun && typeof selectFun == 'function') {
-    this.selectFun();
+    this.selectFun(this);
   }
 
   return this;

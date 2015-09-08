@@ -1,4 +1,8 @@
 
+/**
+ * Module dependencies.
+ */
+
 var gulp = require('gulp');
 var jade = require('gulp-jade');
 var stylus = require('gulp-stylus');
@@ -6,36 +10,64 @@ var Duo = require('duo');
 var fs = require('fs-extra');
 var path = require('path');
 
-var examplesDir = 'examples';
-var buildDir = 'dist';
-var entryFile = 'index.js';
+/**
+ * Define constants.
+ */
 
-var duo = new Duo(__dirname);
+var EXAMPLES_DIR = 'examples';
+var BUILD_DIR = 'dist';
+var ENTRY_FILE = 'index.js';
+
+/**
+ * Delete the built directory.
+ */
+
+gulp.task('clean', function () {
+	fs.removeSync(BUILD_DIR);
+});
+
+/**
+ * Render jade templates as html
+ * for each example.
+ */
 
 gulp.task('views', function () {
-	gulp.src(path.join(examplesDir, '**/index.jade'))
+	gulp.src(path.join(EXAMPLES_DIR, '**/index.jade'))
 		.pipe(jade())
-		.pipe(gulp.dest(buildDir));
+		.pipe(gulp.dest(BUILD_DIR));
 });
+
+/**
+ * Render stylus as css
+ * for each example.
+ */
 
 gulp.task('styles', function () {
-	gulp.src(path.join(examplesDir, '**/index.styl'))
+	gulp.src(path.join(EXAMPLES_DIR, '**/index.styl'))
 		.pipe(stylus())
-		.pipe(gulp.dest(buildDir));
+		.pipe(gulp.dest(BUILD_DIR));
 });
 
+/**
+ * Use duo to traverse and build js modules
+ * for each example.
+ */
+
 gulp.task('scripts', function () {
-	fs.readdirSync(examplesDir).forEach(function (exampleDir) {
-		var examplePath = path.join(__dirname, examplesDir, exampleDir);
-		var entryPath = path.join(examplePath, entryFile);
+	fs.readdirSync(EXAMPLES_DIR).forEach(function (exampleDir) {
+		var examplePath = path.join(__dirname, EXAMPLES_DIR, exampleDir);
+		var entryPath = path.join(examplePath, ENTRY_FILE);
+
 		fs.exists(entryPath, function (exists) {
 			if (!exists) return;
-			var entry = path.join(examplesDir, exampleDir, entryFile);
-			duo.entry(entry)
+
+			var entry = path.join(EXAMPLES_DIR, exampleDir, ENTRY_FILE);
+			new Duo(__dirname).entry(entry)
+			.copy(true)
 			.run(function (err, data) {
 				if (err) throw err;
 
-				var target = path.join(buildDir, exampleDir, entryFile);
+				var target = path.join(BUILD_DIR, exampleDir, ENTRY_FILE);
 				fs.writeFile(target, data, function (err) {
 					if (err) throw err;
 				});
@@ -44,10 +76,10 @@ gulp.task('scripts', function () {
 	});
 });
 
-gulp.task('default', ['views', 'styles', 'scripts']);
+gulp.task('default', ['clean', 'views', 'styles', 'scripts']);
 
 gulp.task('watch', function () {
   gulp.watch('examples/**/index.jade', ['views']);
   gulp.watch('examples/**/index.styl', ['styles']);
-  gulp.watch('examples/**/*.js', ['scripts']);
+  gulp.watch('examples/**/*.{js,html}', ['scripts']);
 });
