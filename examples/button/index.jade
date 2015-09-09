@@ -3,16 +3,37 @@ extends ../layout
 
 block content
   .page-header
-    h1 Button Examples
+    h1 Button
 
-  .panel.panel-default
+  #jerry.panel.panel-default
+
     .panel-heading
-      span Click "Why we need this" to display a dialog modal
+      h2 Basic Expandable Area
+
     .panel-body
-      p#email-label Some text
+      p Jerome "Jerry" Seinfeld is the protagonist of the American television sitcom Seinfeld (1989&dash;1998).
+
       .form-group
         .input-group
-          button.form-control
+          button.form-control.expand-trigger View More
+
+      .well.expand-area
+        p The straight man among his group of friends, this semi-fictionalized version of comedian Jerry Seinfeld was named after, co-created by, based on, and played by Seinfeld himself. The series revolves around Jerry's misadventures with his best friend George Costanza, neighbor Cosmo Kramer, and ex-girlfriend Elaine Benes. He is usually the voice of reason amidst his friends' antics and the focal point of the foursome's relationship.
+
+  #elaine.panel.panel-default
+
+    .panel-heading
+      h2 Animated Expandable Area
+
+    .panel-body
+      p Elaine Marie Benes is a fictional character on the American television sitcom Seinfeld (1989&dash;1998), played by Julia Louis-Dreyfus.
+
+      .form-group
+        .input-group
+          button.form-control.expand-trigger View More
+
+      .well.expand-area(style="display: none;")
+        p Elaine's best friend is her ex-boyfriend Jerry Seinfeld, and she is also good friends with George Costanza and Cosmo Kramer. Julia Louis-Dreyfus received critical acclaim for her performance as Elaine, winning an Emmy, a Golden Globe and five SAG Awards.
 
 block scripts
   script(src="index.js")

@@ -12,6 +12,14 @@ ul {
 *:focus {
   outline-width: 1px;
 }
+.panel-heading h1,
+.panel-heading h2,
+.panel-heading h3,
+.panel-heading h4,
+.panel-heading h5,
+.panel-heading h6 {
+  margin: 0.1em;
+}
 #myMegamenu {
   background-color: #e4e4e4;
 }

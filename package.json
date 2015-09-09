@@ -13,16 +13,14 @@
     "wcag"
   ],
   "author": "Matt Isner <isnerms@gmail.com>",
-  "license": "ISC",
-  "dependencies": {
-    "gulp": "^3.8.11",
-    "gulp-jade": "^1.0.1",
-    "jade": "^1.10.0"
-  },
+  "license": "MIT",
+  "dependencies": {},
   "devDependencies": {
-    "bower": "^1.4.1",
+    "bower": "^1.5.2",
     "duo": "0.8.4",
     "fs-extra": "^0.18.4",
+    "gulp": "^3.8.11",
+    "gulp-jade": "^1.0.1",
     "gulp-stylus": "^2.0.3",
     "through2": "^0.6.5"
   }

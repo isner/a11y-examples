@@ -3,27 +3,28 @@
  * Module dependencies.
  */
 
-var gulp = require('gulp');
 var jade = require('gulp-jade');
 var stylus = require('gulp-stylus');
-var Duo = require('duo');
 var fs = require('fs-extra');
+var gulp = require('gulp');
 var path = require('path');
+var Duo = require('duo');
 
 /**
  * Define constants.
  */
 
-var EXAMPLES_DIR = 'examples';
-var BUILD_DIR = 'dist';
-var ENTRY_FILE = 'index.js';
+var BOWER = 'bower_components';
+var EXAMPLES = 'examples';
+var INDEX = 'index.js';
+var DIST = 'dist';
 
 /**
  * Delete the built directory.
  */
 
 gulp.task('clean', function () {
-	fs.removeSync(BUILD_DIR);
+	fs.removeSync(DIST);
 });
 
 /**
@@ -32,9 +33,9 @@ gulp.task('clean', function () {
  */
 
 gulp.task('views', function () {
-	gulp.src(path.join(EXAMPLES_DIR, '**/index.jade'))
+	gulp.src(path.join(EXAMPLES, '**/index.jade'))
 		.pipe(jade())
-		.pipe(gulp.dest(BUILD_DIR));
+		.pipe(gulp.dest(DIST));
 });
 
 /**
@@ -43,9 +44,9 @@ gulp.task('views', function () {
  */
 
 gulp.task('styles', function () {
-	gulp.src(path.join(EXAMPLES_DIR, '**/index.styl'))
+	gulp.src(path.join(EXAMPLES, '**/index.styl'))
 		.pipe(stylus())
-		.pipe(gulp.dest(BUILD_DIR));
+		.pipe(gulp.dest(DIST));
 });
 
 /**
@@ -54,29 +55,61 @@ gulp.task('styles', function () {
  */
 
 gulp.task('scripts', function () {
-	fs.readdirSync(EXAMPLES_DIR).forEach(function (exampleDir) {
-		var examplePath = path.join(__dirname, EXAMPLES_DIR, exampleDir);
-		var entryPath = path.join(examplePath, ENTRY_FILE);
+	var exampleDirs = fs.readdirSync(EXAMPLES);
 
-		fs.exists(entryPath, function (exists) {
-			if (!exists) return;
+	exampleDirs.forEach(function (exampleDir) {
 
-			var entry = path.join(EXAMPLES_DIR, exampleDir, ENTRY_FILE);
-			new Duo(__dirname).entry(entry)
-			.copy(true)
-			.run(function (err, data) {
-				if (err) throw err;
+		var entryPath =
+			path.join(__dirname, EXAMPLES, exampleDir, INDEX);
 
-				var target = path.join(BUILD_DIR, exampleDir, ENTRY_FILE);
-				fs.writeFile(target, data, function (err) {
+		if (fs.existsSync(entryPath)) {
+
+			new Duo(__dirname)
+				.entry(path.join(EXAMPLES, exampleDir, INDEX))
+				.copy(true)
+				.run(function (err, data) {
 					if (err) throw err;
+
+					var target = path.join(DIST, exampleDir, INDEX);
+
+					fs.ensureFile(target, function (err) {
+						if (err) throw err;
+
+						fs.writeFile(target, data, function (err) {
+							if (err) throw err;
+						});
+					});
 				});
-			});
-		});
+		}
 	});
 });
 
-gulp.task('default', ['clean', 'views', 'styles', 'scripts']);
+/**
+ * Copy bower components to distribution directory.
+ */
+
+gulp.task('bower', function () {
+	fs.copySync(path.join(BOWER, 'jquery/dist/jquery.min.js'),
+		path.join(DIST, 'jquery.min.js'));
+	fs.copySync(path.join(BOWER, 'jquery-ui/jquery-ui.min.js'),
+		path.join(DIST, 'jquery-ui.min.js'));
+});
+
+/**
+ * `default` task.
+ */
+
+gulp.task('default', [
+	'clean',
+	'bower',
+	'views',
+	'styles',
+	'scripts'
+]);
+
+/**
+ * `watch` task.
+ */
 
 gulp.task('watch', function () {
   gulp.watch('examples/**/index.jade', ['views']);
