@@ -24,7 +24,7 @@ var DIST = 'dist';
  */
 
 gulp.task('clean', function () {
-	fs.removeSync(DIST);
+  fs.removeSync(DIST);
 });
 
 /**
@@ -33,9 +33,9 @@ gulp.task('clean', function () {
  */
 
 gulp.task('views', function () {
-	gulp.src(path.join(EXAMPLES, '**/index.jade'))
-		.pipe(jade())
-		.pipe(gulp.dest(DIST));
+  gulp.src(path.join(EXAMPLES, '**/index.jade'))
+    .pipe(jade())
+    .pipe(gulp.dest(DIST));
 });
 
 /**
@@ -44,9 +44,9 @@ gulp.task('views', function () {
  */
 
 gulp.task('styles', function () {
-	gulp.src(path.join(EXAMPLES, '**/index.styl'))
-		.pipe(stylus())
-		.pipe(gulp.dest(DIST));
+  gulp.src(path.join(EXAMPLES, '**/index.styl'))
+    .pipe(stylus())
+    .pipe(gulp.dest(DIST));
 });
 
 /**
@@ -55,33 +55,33 @@ gulp.task('styles', function () {
  */
 
 gulp.task('scripts', function () {
-	var exampleDirs = fs.readdirSync(EXAMPLES);
+  var exampleDirs = fs.readdirSync(EXAMPLES);
 
-	exampleDirs.forEach(function (exampleDir) {
+  exampleDirs.forEach(function (exampleDir) {
 
-		var entryPath =
-			path.join(__dirname, EXAMPLES, exampleDir, INDEX);
+    var entryPath =
+      path.join(__dirname, EXAMPLES, exampleDir, INDEX);
 
-		if (fs.existsSync(entryPath)) {
+    if (fs.existsSync(entryPath)) {
 
-			new Duo(__dirname)
-				.entry(path.join(EXAMPLES, exampleDir, INDEX))
-				.copy(true)
-				.run(function (err, data) {
-					if (err) throw err;
+      new Duo(__dirname)
+        .entry(path.join(EXAMPLES, exampleDir, INDEX))
+        .copy(true)
+        .run(function (err, data) {
+          if (err) throw err;
 
-					var target = path.join(DIST, exampleDir, INDEX);
+          var target = path.join(DIST, exampleDir, INDEX);
 
-					fs.ensureFile(target, function (err) {
-						if (err) throw err;
+          fs.ensureFile(target, function (err) {
+            if (err) throw err;
 
-						fs.writeFile(target, data, function (err) {
-							if (err) throw err;
-						});
-					});
-				});
-		}
-	});
+            fs.writeFile(target, data, function (err) {
+              if (err) throw err;
+            });
+          });
+        });
+    }
+  });
 });
 
 /**
@@ -89,10 +89,10 @@ gulp.task('scripts', function () {
  */
 
 gulp.task('bower', function () {
-	fs.copySync(path.join(BOWER, 'jquery/dist/jquery.min.js'),
-		path.join(DIST, 'jquery.min.js'));
-	fs.copySync(path.join(BOWER, 'jquery-ui/jquery-ui.min.js'),
-		path.join(DIST, 'jquery-ui.min.js'));
+  fs.copySync(path.join(BOWER, 'jquery/dist/jquery.min.js'),
+    path.join(DIST, 'jquery.min.js'));
+  fs.copySync(path.join(BOWER, 'jquery-ui/jquery-ui.min.js'),
+    path.join(DIST, 'jquery-ui.min.js'));
 });
 
 /**
@@ -100,11 +100,11 @@ gulp.task('bower', function () {
  */
 
 gulp.task('default', [
-	'clean',
-	'bower',
-	'views',
-	'styles',
-	'scripts'
+  'clean',
+  'bower',
+  'views',
+  'styles',
+  'scripts'
 ]);
 
 /**

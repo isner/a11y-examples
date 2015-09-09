@@ -23,7 +23,7 @@ var trigger = query('#elaine .expand-trigger');
 var area = query('#elaine .expand-area');
 
 function animate() {
-  $(area).toggle('blind', { direction: 'up' }, 400);
+  $(area).toggle('blind', { direction: 'up' }, 200);
 }
 
 new Expanded(trigger, area, {
