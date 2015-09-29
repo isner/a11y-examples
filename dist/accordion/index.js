@@ -130,7 +130,7 @@ module.exports = Accordion;
  */
 
 function Accordion(el, selectors) {
-	if (!(this instanceof Accordion)) {
+  if (!(this instanceof Accordion)) {
     return new Accordion(selectors);
   }
   this.el = el;

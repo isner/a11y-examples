@@ -3,22 +3,17 @@ extends ../layout
 
 block content
   .page-header
-    h1 Dialog Modal Example
+    h1 Dialog Modal
 
-  .panel.panel-default
+  #ex-basic.panel.panel-default
+
     .panel-heading
-      span Click "Why we need this" to display a dialog modal
+      h2 Example: Message Dialog
+
     .panel-body
-      p#email-label Email address
-      .form-group
-        .input-group
-          input.form-control(type="text" placeholder="Email address" aria-labelledby="email-label")
-          //- span.input-group-btn
-            //- button#why.btn.btn-default Why we need this
-        a#why(role="button" tabindex="0") Why we need your email address
       .form-group
         .btn-group
-          button.btn.btn-default(type="submit" disabled="disabled") Submit
+          button.btn.btn-default Learn About Message Dialogs
 
 block scripts
   script(src="index.js")

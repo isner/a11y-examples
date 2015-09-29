@@ -44,7 +44,7 @@ gulp.task('views', function () {
  */
 
 gulp.task('styles', function () {
-  gulp.src(path.join(EXAMPLES, '**/index.styl'))
+  gulp.src(path.join(EXAMPLES, '**/*.styl'))
     .pipe(stylus())
     .pipe(gulp.dest(DIST));
 });

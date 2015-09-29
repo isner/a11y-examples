@@ -17,7 +17,7 @@ module.exports = DialogModal;
 
 function DialogModal(trigger, content, headingText) {
   if (trigger.nodeType != 1) {
-    throw new TypeError('`trigger` must be an HTMLElement');
+    throw new TypeError('`trigger` must be an element');
   }
   var self = this;
   this.trigger = trigger;

@@ -10,15 +10,12 @@ var query = require('component/query');
  * Define arguments.
  */
 
-var trigger = query('#why');
+var trigger = query('#ex-basic .btn-default');
 var content = require('./modal-body.html');
-var title = 'Why we need your email address';
+var title = 'Types of Message Dialogs';
 
 /**
  * Create a dialog-modal using the above arguments.
  */
 
-var dm =
 new DialogModal(trigger, content, title);
-
-console.log(dm);

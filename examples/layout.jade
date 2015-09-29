@@ -3,10 +3,14 @@ html(lang="en")
   head
     meta(charset="utf=8")
     title A11y Examples
+
     link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css")
-    script(src="../jquery.min.js")
-    script(src="../jquery-ui.min.js")
+
+    block resources
+      script(src="../jquery.min.js")
+      script(src="../jquery-ui.min.js")
     block styles
+
   body
     block content
     block scripts

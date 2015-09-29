@@ -45,9 +45,9 @@ function Modal(content, headingText) {
   }
   this.equator = createEquator();
   this.omphalos = createOmphalos();
-  this.panel = new Panel(content, headingText);
+  this.content = new Content(content, headingText);
 
-  var el = this.el = this.panel.el;
+  var el = this.el = this.content.el;
 
   this.equator.appendChild(this.omphalos);
   this.omphalos.appendChild(el);
@@ -156,7 +156,7 @@ function createOmphalos() {
   return el;
 }
 
-function Panel(content, headingText, buttons) {
+function Content(content, headingText, buttons) {
   var el = this.el = document.createElement('div');
   this.heading = new Heading(headingText);
   this.body = new Body(content);
@@ -164,12 +164,9 @@ function Panel(content, headingText, buttons) {
 
   el.setAttribute('tabindex', '-1');
   el.setAttribute('role', 'dialog');
-  // TODO Allow user to specify dialog title other
-  // heading text
   el.setAttribute('aria-label', headingText);
   classes(el)
-  .add('panel')
-  .add('panel-default')
+  .add('modal-content')
   .add('msi-modal');
 
   Object.keys(styles).forEach(function (prop) {
@@ -191,7 +188,7 @@ function Heading(text) {
     return;
   }
   this.el = document.createElement('div');
-  classes(this.el).add('panel-heading');
+  classes(this.el).add('modal-header');
 
   var h2 = document.createElement('h2');
   classes(h2).add('modal-title');

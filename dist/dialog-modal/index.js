@@ -98,18 +98,15 @@ var query = require('component/query');
  * Define arguments.
  */
 
-var trigger = query('#why');
+var trigger = query('#ex-basic .btn-default');
 var content = require('./modal-body.html');
-var title = 'Why we need your email address';
+var title = 'Types of Message Dialogs';
 
 /**
  * Create a dialog-modal using the above arguments.
  */
 
-var dm =
 new DialogModal(trigger, content, title);
-
-console.log(dm);
 
 }, {"./dialog-modal":2,"component/query":3,"./modal-body.html":4}],
 2: [function(require, module, exports) {
@@ -132,7 +129,7 @@ module.exports = DialogModal;
 
 function DialogModal(trigger, content, headingText) {
   if (trigger.nodeType != 1) {
-    throw new TypeError('`trigger` must be an HTMLElement');
+    throw new TypeError('`trigger` must be an element');
   }
   var self = this;
   this.trigger = trigger;
@@ -1155,9 +1152,9 @@ function Modal(content, headingText) {
   }
   this.equator = createEquator();
   this.omphalos = createOmphalos();
-  this.panel = new Panel(content, headingText);
+  this.content = new Content(content, headingText);
 
-  var el = this.el = this.panel.el;
+  var el = this.el = this.content.el;
 
   this.equator.appendChild(this.omphalos);
   this.omphalos.appendChild(el);
@@ -1266,7 +1263,7 @@ function createOmphalos() {
   return el;
 }
 
-function Panel(content, headingText, buttons) {
+function Content(content, headingText, buttons) {
   var el = this.el = document.createElement('div');
   this.heading = new Heading(headingText);
   this.body = new Body(content);
@@ -1274,12 +1271,9 @@ function Panel(content, headingText, buttons) {
 
   el.setAttribute('tabindex', '-1');
   el.setAttribute('role', 'dialog');
-  // TODO Allow user to specify dialog title other
-  // heading text
   el.setAttribute('aria-label', headingText);
   classes(el)
-  .add('panel')
-  .add('panel-default')
+  .add('modal-content')
   .add('msi-modal');
 
   Object.keys(styles).forEach(function (prop) {
@@ -1301,7 +1295,7 @@ function Heading(text) {
     return;
   }
   this.el = document.createElement('div');
-  classes(this.el).add('panel-heading');
+  classes(this.el).add('modal-header');
 
   var h2 = document.createElement('h2');
   classes(h2).add('modal-title');
@@ -1538,5 +1532,5 @@ exports.normalize = function (event) {
 
 }, {}],
 4: [function(require, module, exports) {
-module.exports = '<p>We distribute your email address to any outside party willing to pay us for it. It\'s an excellent source of income, and we\'re frankly not very concerned what you think about this practice.</p>';
+module.exports = '<h3>Simple versus Detail</h3>\n<p>Message dialogs can be "simple" or "detail". A detail message dialog conveys a message that has any one of the following attributes:</p>\n<ol class="list-group">\n  <li class="list-group-item">1. Is more than one sentence in length</li>\n  <li class="list-group-item">2. Contains information where punctuation is an essential part of the message, such as syntax of a required date format</li class="list-group-item">\n  <li class="list-group-item">3. Contains detail information the user may need to re-use, e.g., a phone number, e-mail address, error number, etc.</li>\n  <li class="list-group-item">4. Contains an interactive element, such as a link to a help resource.</li>\n</ol>\n<p>If the dialog is not a detail message dialog, one can consider it a simple message dialog.</p>\n<h3>Setting Focus</h3>\n<p>For simple messages, it is appropriate to set focus to the default confirmation button - e.g., "OK" or "Close". In the case of detail messages, on the other hand, focus should be set to the element containing the message (as is the case with the very dialog message you are reading!).</p>';
 }, {}]}, {}, {"1":""})

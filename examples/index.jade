@@ -1,0 +1,26 @@
+
+extends layout
+
+block resources
+  script(src="jquery.min.js")
+  script(src="jquery-ui.min.js")
+
+block content
+  h1 Accessibility Examples
+
+  h2 Design Patterns
+
+  p
+    span Examples of the design patterns outlined in#{' '}
+    a(href="http://www.w3.org/TR/wai-aria-practices/#aria_ex") WAI-ARIA 1.0 Authoring Practices: Design Patterns
+
+  ul
+    li: a(href="accordion/index.html") Accordion
+    li: a(href="alert/index.html") Alert
+    li: a(href="button/index.html") Button
+    li: a(href="dialog-modal/index.html") Dialog Modal
+    li: a(href="menu/index.html") Menu
+    li: a(href="tabpanel/index.html") Tabpanel
+
+block styles
+  link(rel="stylesheet" href="global.css")
