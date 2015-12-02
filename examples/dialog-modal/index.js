@@ -10,7 +10,7 @@ var query = require('component/query');
  * Define arguments.
  */
 
-var trigger = query('#ex-basic .btn-default');
+var trigger = query('.btn-default');
 var content = require('./modal-body.html');
 var title = 'Types of Message Dialogs';
 

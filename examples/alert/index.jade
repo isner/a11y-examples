@@ -1,14 +1,25 @@
 
 extends ../layout
 
-block content
-  h1 Alert Example
+block vars
+  - var heading = 'Alert'
 
+block content
   .panel.panel-default
     .panel-heading
-      span#label What is the Answer to The Ultimate Question of Life, the Universe, and Everything?
+      h2 What is an Alert?
+      
     .panel-body
+      p An <span class="bold">Alert</span> is a message that contains important information. It is inserted dynamically into the page as a result of some kind of user input and should be announced immediately by screen readers without requiring the user to navigate to the alert message.
+      
+  .panel.panel-default
+    .panel-heading
+      h2 Example: Alert in Response to Form Submission
+      
+    .panel-body
+      p Answer the question below to trigger an alert.
       form
+        label#label What is the Answer to The Ultimate Question of Life, the Universe, and Everything?
         .input-group
           input.form-control(type="text" aria-labelledby="label")
           span.input-group-btn

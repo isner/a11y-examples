@@ -14,7 +14,7 @@ var input = query(selectors.input, form);
 var submit = query(selectors.submit, form);
 var alert = new Alert(query(selectors.alert));
 
-submit.addEventListener('click', function (e) {
+form.addEventListener('submit', function (e) {
   e.preventDefault();
   alert.hide();
 

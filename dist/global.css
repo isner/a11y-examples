@@ -12,6 +12,9 @@ ul {
 *:focus {
   outline-width: 1px;
 }
+#content-wrapper {
+  max-width: 800px;
+}
 .panel-heading h1,
 .panel-heading h2,
 .panel-heading h3,

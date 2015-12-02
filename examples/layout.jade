@@ -1,6 +1,7 @@
 doctype html
 html(lang="en")
   head
+    block vars
     meta(charset="utf=8")
     title A11y Examples
 
@@ -12,5 +13,8 @@ html(lang="en")
     block styles
 
   body
-    block content
+    #content-wrapper
+      .page-header
+        h1 #{heading}
+      block content
     block scripts

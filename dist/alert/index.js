@@ -102,7 +102,7 @@ var input = query(selectors.input, form);
 var submit = query(selectors.submit, form);
 var alert = new Alert(query(selectors.alert));
 
-submit.addEventListener('click', function (e) {
+form.addEventListener('submit', function (e) {
   e.preventDefault();
   alert.hide();
 
@@ -167,6 +167,10 @@ module.exports = Alert;
 
 /**
  * Create an instance of `Alert`.
+ *
+ * TODO This is not currently modular. It relies on role="alert"
+ * 			being present in the template and uses Bootstrap-specific
+ * 			classes. Make it modular!
  *
  * @param {HTMLElement} el
  * @api public

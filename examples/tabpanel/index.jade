@@ -1,11 +1,10 @@
 
 extends ../layout
 
+block vars
+  - var heading = 'Tab Panel'
+
 block content
-  h1 Tab Panel
-
-  a(href="#before") Before
-
   #tabpanel-widget
     ul.nav.nav-tabs
       li: a(href="#" data-panel="jerry-panel") Jerry
@@ -37,8 +36,6 @@ block content
             a(href="https://en.wikipedia.org/wiki/Cosmo_Kramer")
               | Kramer's Wikipedia page
           p Cosmo Kramer, usually referred to as simply "Kramer", is a fictional character on the American television sitcom Seinfeld (1989&dash;1998), played by Michael Richards. The character is loosely based on comedian Kenny Kramer, Larry David's former neighbor across the hall. Kramer is the friend and neighbor of main character Jerry Seinfeld, residing in Apartment 5B, and is friends with George Costanza and Elaine Benes. Of the series' four central characters, only Kramer has no visible means of support; what few jobs he holds seem to be nothing more than larks.
-
-  a(href="#after") After
 
 block scripts
   script(src="index.js")
