@@ -1,11 +1,12 @@
 {
   "name": "a11y-examples",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "readme": "readme.md",
   "description": "Examples of accessible widgets and design patterns",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./node_modules/.bin/gulp"
   },
   "keywords": [
     "accessibility",
