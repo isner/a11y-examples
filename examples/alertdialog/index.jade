@@ -2,3 +2,23 @@
 extends ../layout
 
 block content
+  .page-header
+    h1 Alert Dialog
+
+  #ex-basic.panel.panel-default
+
+    .panel-heading
+      h2 Example: Alert Dialog
+
+    .panel-body
+      p An Alert Dialog is a simple dialog with a message that alerts, warns, or requests confirmation (e.g., "Are you sure you want quit?"). In most ways, an Alert Dialog is identical to a Modal Dialog.
+      
+      .form-group
+        .btn-group
+          button.btn.btn-default Trigger Alert
+
+block scripts
+  script(src="index.js")
+
+block styles
+  link(rel="stylesheet" href="index.css")

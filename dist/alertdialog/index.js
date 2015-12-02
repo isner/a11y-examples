@@ -100,13 +100,13 @@ var query = require('component/query');
 
 var trigger = query('#ex-basic .btn-default');
 var content = require('./modal-body.html');
-var title = 'Types of Message Dialogs';
+var title = 'Example Alert';
 
 /**
- * Create a dialog-modal using the above arguments.
+ * Create an alert-dialog using the above arguments.
  */
 
-new DialogModal(trigger, content, title, false);
+new DialogModal(trigger, content, title, true);
 
 }, {"../../lib/dialog-modal/dialog-modal.js":2,"component/query":3,"./modal-body.html":4}],
 2: [function(require, module, exports) {
@@ -1545,5 +1545,5 @@ exports.normalize = function (event) {
 
 }, {}],
 4: [function(require, module, exports) {
-module.exports = '<h3>Simple versus Detail</h3>\n<p>Message dialogs can be "simple" or "detail". A detail message dialog conveys a message that has any one of the following attributes:</p>\n<ol class="list-group">\n  <li class="list-group-item">1. Is more than one sentence in length</li>\n  <li class="list-group-item">2. Contains information where punctuation is an essential part of the message, such as syntax of a required date format</li class="list-group-item">\n  <li class="list-group-item">3. Contains detail information the user may need to re-use, e.g., a phone number, e-mail address, error number, etc.</li>\n  <li class="list-group-item">4. Contains an interactive element, such as a link to a help resource.</li>\n</ol>\n<p>If the dialog is not a detail message dialog, one can consider it a simple message dialog.</p>\n<h3>Setting Focus</h3>\n<p>For simple messages, it is appropriate to set focus to the default confirmation button - e.g., "OK" or "Close". In the case of detail messages, on the other hand, focus should be set to the element containing the message (as is the case with the very dialog message you are reading!).</p>';
+module.exports = '<p>An important message can be displayed here.</p>\n';
 }, {}]}, {}, {"1":""})

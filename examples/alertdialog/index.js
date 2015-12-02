@@ -12,10 +12,10 @@ var query = require('component/query');
 
 var trigger = query('#ex-basic .btn-default');
 var content = require('./modal-body.html');
-var title = 'Types of Message Dialogs';
+var title = 'Example Alert';
 
 /**
- * Create a dialog-modal using the above arguments.
+ * Create an alert-dialog using the above arguments.
  */
 
-new DialogModal(trigger, content, title, false);
+new DialogModal(trigger, content, title, true);
