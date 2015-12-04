@@ -118,7 +118,7 @@ new DialogModal(trigger, content, title, false);
 var Emitter = require('component/emitter');
 var events = require('component/events');
 
-var HideExcept = require('../hide-except');
+var AriaIsolate = require('isner/aria-isolate');
 var Overlay = require('./overlay');
 var Modal = require('./modal');
 
@@ -153,7 +153,7 @@ function DialogModal(trigger, content, headingText, isAlert) {
     self.close();
   });
 
-  this.hider = new HideExcept(this.modal.el);
+  this.hider = new AriaIsolate(this.modal.el);
 
   this.events = events(trigger, this);
   this.events.bind('click');
@@ -190,7 +190,7 @@ DialogModal.prototype.close = function () {
   this.trigger.focus();
 };
 
-}, {"component/emitter":5,"component/events":6,"../hide-except":7,"./overlay":8,"./modal":9}],
+}, {"component/emitter":5,"component/events":6,"isner/aria-isolate":7,"./overlay":8,"./modal":9}],
 5: [function(require, module, exports) {
 
 /**
@@ -733,19 +733,19 @@ exports.engine = function(obj){
 var classes = require('component/classes');
 
 /**
- * Expose `HideExcept`.
+ * Expose `AriaIsolate`.
  */
 
-module.exports = HideExcept;
+exports = module.exports = AriaIsolate;
 
 /**
- * Create an instance of `HideExcept#`.
+ * Create an instance of `AriaIsolate`.
  *
  * @param {HTMLElement} el
  * @api public
  */
 
-function HideExcept(el) {
+function AriaIsolate(el) {
   this.el = el;
   this.cache = [];
 }
@@ -756,7 +756,7 @@ function HideExcept(el) {
  * @api public
  */
 
-HideExcept.prototype.activate = function () {
+AriaIsolate.prototype.activate = function () {
   var self = this;
   var source = this.el;
   var parent = this.el.parentNode;
@@ -780,7 +780,7 @@ HideExcept.prototype.activate = function () {
  * @api public
  */
 
-HideExcept.prototype.deactivate = function () {
+AriaIsolate.prototype.deactivate = function () {
   this.cache.forEach(function (el) {
     // TODO add ability to detech presence of aria-hidden
     // attribute before this utility applies so we don't
@@ -797,7 +797,7 @@ HideExcept.prototype.deactivate = function () {
  * @api private
  */
 
-HideExcept.prototype.hide = function (el) {
+AriaIsolate.prototype.hide = function (el) {
   this.cache.push(el);
   el.setAttribute('aria-hidden', 'true');
 };
