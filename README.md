@@ -39,3 +39,7 @@ Make changes to the examples in the `examples/` directory, then rebuild using
 ```bash
 $ npm run build
 ```
+
+## TODO
+
+Add a password-strength indicator, like [this one](https://css-tricks.com/password-strength-meter/).
