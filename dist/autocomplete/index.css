@@ -29,3 +29,26 @@ ul {
 .bold {
   font-weight: 600;
 }
+.block {
+  display: block;
+}
+#character-input {
+  width: 300px;
+  padding: 0.3em 0.5em;
+}
+.listbox-container {
+  position: relative;
+}
+.listbox-container ul {
+  position: absolute;
+  width: 100%;
+  background-color: #fff;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+}
+.listbox-container ul li {
+  padding: 0.2em 0.5em;
+}
+.listbox-container ul li.selected {
+  background-color: #eee;
+}
