@@ -238,7 +238,11 @@ Alert.prototype.hide = function () {
  * Module dependencies.
  */
 
-var index = require('indexof');
+try {
+  var index = require('indexof');
+} catch (err) {
+  var index = require('component-indexof');
+}
 
 /**
  * Whitespace regexp.
@@ -422,7 +426,7 @@ ClassList.prototype.contains = function(name){
     : !! ~index(this.array(), name);
 };
 
-}, {"indexof":5}],
+}, {"indexof":5,"component-indexof":5}],
 5: [function(require, module, exports) {
 module.exports = function(arr, obj){
   if (arr.indexOf) return arr.indexOf(obj);

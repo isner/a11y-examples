@@ -423,7 +423,11 @@ function str(len) {
  * Module dependencies.
  */
 
-var index = require('indexof');
+try {
+  var index = require('indexof');
+} catch (err) {
+  var index = require('component-indexof');
+}
 
 /**
  * Whitespace regexp.
@@ -607,7 +611,7 @@ ClassList.prototype.contains = function(name){
     : !! ~index(this.array(), name);
 };
 
-}, {"indexof":7}],
+}, {"indexof":7,"component-indexof":7}],
 7: [function(require, module, exports) {
 module.exports = function(arr, obj){
   if (arr.indexOf) return arr.indexOf(obj);
@@ -623,8 +627,17 @@ module.exports = function(arr, obj){
  * Module dependencies.
  */
 
-var events = require('event');
-var delegate = require('delegate');
+try {
+  var events = require('event');
+} catch(err) {
+  var events = require('component-event');
+}
+
+try {
+  var delegate = require('delegate');
+} catch(err) {
+  var delegate = require('component-delegate');
+}
 
 /**
  * Expose `Events`.
@@ -795,7 +808,7 @@ function parse(event) {
   }
 }
 
-}, {"event":8,"delegate":9}],
+}, {"event":8,"component-event":8,"delegate":9,"component-delegate":9}],
 8: [function(require, module, exports) {
 var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
     unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
@@ -838,8 +851,17 @@ exports.unbind = function(el, type, fn, capture){
  * Module dependencies.
  */
 
-var closest = require('closest')
-  , event = require('event');
+try {
+  var closest = require('closest');
+} catch(err) {
+  var closest = require('component-closest');
+}
+
+try {
+  var event = require('event');
+} catch(err) {
+  var event = require('component-event');
+}
 
 /**
  * Delegate event `type` to `selector`
@@ -877,13 +899,17 @@ exports.unbind = function(el, type, fn, capture){
   event.unbind(el, type, fn, capture);
 };
 
-}, {"closest":10,"event":8}],
+}, {"closest":10,"component-closest":10,"event":8,"component-event":8}],
 10: [function(require, module, exports) {
 /**
  * Module Dependencies
  */
 
-var matches = require('matches-selector')
+try {
+  var matches = require('matches-selector')
+} catch (err) {
+  var matches = require('component-matches-selector')
+}
 
 /**
  * Export `closest`
@@ -912,13 +938,17 @@ function closest (el, selector, scope) {
   return matches(el, selector) ? el : null;
 }
 
-}, {"matches-selector":11}],
+}, {"matches-selector":11,"component-matches-selector":11}],
 11: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
 
-var query = require('query');
+try {
+  var query = require('query');
+} catch (err) {
+  var query = require('component-query');
+}
 
 /**
  * Element prototype.
@@ -961,4 +991,4 @@ function match(el, selector) {
   return false;
 }
 
-}, {"query":2}]}, {}, {"1":""})
+}, {"query":2,"component-query":2}]}, {}, {"1":""})

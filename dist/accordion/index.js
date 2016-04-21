@@ -234,7 +234,9 @@ Accordion.prototype.selectPair = function (i) {
  * Expose `Emitter`.
  */
 
-module.exports = Emitter;
+if (typeof module !== 'undefined') {
+  module.exports = Emitter;
+}
 
 /**
  * Initialize a new `Emitter`.
@@ -398,8 +400,17 @@ Emitter.prototype.hasListeners = function(event){
  * Module dependencies.
  */
 
-var events = require('event');
-var delegate = require('delegate');
+try {
+  var events = require('event');
+} catch(err) {
+  var events = require('component-event');
+}
+
+try {
+  var delegate = require('delegate');
+} catch(err) {
+  var delegate = require('component-delegate');
+}
 
 /**
  * Expose `Events`.
@@ -570,7 +581,7 @@ function parse(event) {
   }
 }
 
-}, {"event":7,"delegate":8}],
+}, {"event":7,"component-event":7,"delegate":8,"component-delegate":8}],
 7: [function(require, module, exports) {
 var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
     unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
@@ -613,8 +624,17 @@ exports.unbind = function(el, type, fn, capture){
  * Module dependencies.
  */
 
-var closest = require('closest')
-  , event = require('event');
+try {
+  var closest = require('closest');
+} catch(err) {
+  var closest = require('component-closest');
+}
+
+try {
+  var event = require('event');
+} catch(err) {
+  var event = require('component-event');
+}
 
 /**
  * Delegate event `type` to `selector`
@@ -652,13 +672,17 @@ exports.unbind = function(el, type, fn, capture){
   event.unbind(el, type, fn, capture);
 };
 
-}, {"closest":9,"event":7}],
+}, {"closest":9,"component-closest":9,"event":7,"component-event":7}],
 9: [function(require, module, exports) {
 /**
  * Module Dependencies
  */
 
-var matches = require('matches-selector')
+try {
+  var matches = require('matches-selector')
+} catch (err) {
+  var matches = require('component-matches-selector')
+}
 
 /**
  * Export `closest`
@@ -687,13 +711,17 @@ function closest (el, selector, scope) {
   return matches(el, selector) ? el : null;
 }
 
-}, {"matches-selector":10}],
+}, {"matches-selector":10,"component-matches-selector":10}],
 10: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
 
-var query = require('query');
+try {
+  var query = require('query');
+} catch (err) {
+  var query = require('component-query');
+}
 
 /**
  * Element prototype.
@@ -736,7 +764,7 @@ function match(el, selector) {
   return false;
 }
 
-}, {"query":5}],
+}, {"query":5,"component-query":5}],
 5: [function(require, module, exports) {
 function one(selector, el) {
   return el.querySelector(selector);
@@ -926,7 +954,9 @@ Pair.prototype.select = function () {
  * Expose `Emitter`.
  */
 
-module.exports = Emitter;
+if (typeof module !== 'undefined') {
+  module.exports = Emitter;
+}
 
 /**
  * Initialize a new `Emitter`.
@@ -1171,7 +1201,11 @@ Panel.prototype.onkeydown = function (e) {
  * Module dependencies.
  */
 
-var index = require('indexof');
+try {
+  var index = require('indexof');
+} catch (err) {
+  var index = require('component-indexof');
+}
 
 /**
  * Whitespace regexp.
@@ -1355,7 +1389,7 @@ ClassList.prototype.contains = function(name){
     : !! ~index(this.array(), name);
 };
 
-}, {"indexof":15}],
+}, {"indexof":15,"component-indexof":15}],
 15: [function(require, module, exports) {
 module.exports = function(arr, obj){
   if (arr.indexOf) return arr.indexOf(obj);
