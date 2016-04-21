@@ -164,7 +164,19 @@ var tp = new Tabpanel(el, {
 
   selectFun: function (tab) {
     console.log('"%s" tab selected', tab.el.innerText);
-  }
+  },
+
+  /**
+   * [optional]
+   * Temporarily suppress any parent's "main" role when Tabbing
+   * from the selected Tab to the Tabpanel.
+   *
+   * NOTE: This option is designed specifically to sidestep a VO/OSX bug.
+   *
+   * @type {Boolean}
+   */
+
+  suppressMain: true
 
 });
 
@@ -236,7 +248,9 @@ Emitter(Tabpanel.prototype);
  * Expose `Emitter`.
  */
 
-module.exports = Emitter;
+if (typeof module !== 'undefined') {
+  module.exports = Emitter;
+}
 
 /**
  * Initialize a new `Emitter`.
@@ -528,7 +542,9 @@ Tablist.prototype.deselectAllExcept = function (exceptTab) {
  * Expose `Emitter`.
  */
 
-module.exports = Emitter;
+if (typeof module !== 'undefined') {
+  module.exports = Emitter;
+}
 
 /**
  * Initialize a new `Emitter`.
@@ -692,8 +708,10 @@ Emitter.prototype.hasListeners = function(event){
  * Module dependencies.
  */
 
+var rndid = require('stephenmathieson/rndid');
 var Emitter = require('component/emitter');
 var events = require('component/events');
+var query = require('component/query');
 var Panel = require('./panel');
 
 /**
@@ -712,8 +730,9 @@ module.exports = Tab;
 
 function Tab(el, options) {
   this.el = el;
+  this.opts = options || {};
   this.panel = new Panel(options.panelGetter(el), options);
-  this.selectFun = options.selectFun;
+  this.el.id = this.el.id || rndid();
 
   this.events = events(el, this);
   this.events.bind('click');
@@ -721,6 +740,8 @@ function Tab(el, options) {
 
   this.el.setAttribute('aria-controls', this.panel.el.id);
   this.el.setAttribute('role', 'tab');
+
+  this.panel.el.setAttribute('aria-labelledby', this.el.id);
 }
 
 /**
@@ -756,9 +777,9 @@ Tab.prototype.select = function () {
   this.panel.show();
 
   // Execute any custom function specified during config.
-  var selectFun = this.selectFun;
+  var selectFun = this.opts.selectFun;
   if (selectFun && typeof selectFun == 'function') {
-    this.selectFun(this);
+    selectFun(this);
   }
 
   return this;
@@ -798,17 +819,130 @@ Tab.prototype.onkeydown = function (e) {
     e.preventDefault();
     this.emit('navigated', 'next');
   }
+  // Tab pressed
+  else if (key === 9 && !e.shiftKey) {
+    e.preventDefault();
+    var panel = this.panel;
+
+    if (this.opts.suppressMain) {
+      suppressMain(function () {
+        panel.focusTemp();
+      }, 100);
+    }
+    else {
+      panel.focusTemp();
+    }
+  }
 };
 
-}, {"component/emitter":6,"component/events":8,"./panel":9}],
+/**
+ * Suppresses "main" landmark semantics,
+ * and reapplies them after a specified `time`.
+ * Executes a given `fun` in the interim.
+ *
+ * @param  {Function} fun
+ * @param  {Number} time - milliseconds
+ */
+
+function suppressMain(fun, time) {
+  var mains = query.all('main, [role="main"]');
+  if (!mains.length) {
+    return fun();
+  }
+  [].slice.call(mains).forEach(function (main) {
+    var role = main.getAttribute('role');
+    main.setAttribute('role', 'presentation');
+    fun();
+    window.setTimeout(function () {
+      if (role) {
+        main.setAttribute('role', role);
+      }
+      else {
+        main.removeAttribute('role');
+      }
+    }, time);
+  });
+}
+
+}, {"stephenmathieson/rndid":8,"component/emitter":6,"component/events":9,"component/query":2,"./panel":10}],
 8: [function(require, module, exports) {
+
+/**
+ * Expose `rndid`.
+ */
+
+exports = module.exports = rndid;
+
+/**
+ * Default ID length.
+ */
+
+exports.defaultLength = 7;
+
+/**
+ * Return a guaranteed unique id of the provided
+ * `length`, optionally prefixed with `prefix`.
+ *
+ * If no length is provided, will use
+ * `rndid.defaultLength`.
+ *
+ * @api private
+ * @param {String} [prefix]
+ * @param {Number} [length]
+ * @return {String}
+ */
+
+function rndid(prefix, length) {
+  if ('number' == typeof prefix)
+    length = prefix, prefix = '';
+  length = length || exports.defaultLength;
+  var id = (prefix || '') + str(length);
+  if (document.getElementById(id)) return rndid(prefix, length);
+  return id;
+}
+
+/**
+ * Generate a random alpha-char.
+ *
+ * @api private
+ * @return {String}
+ */
+
+function character() {
+  return String.fromCharCode(Math.floor(Math.random() * 25) + 97);
+}
+
+/**
+ * Generate a random alpha-string of `len` characters.
+ *
+ * @api private
+ * @param {Number} len
+ * @return {String}
+ */
+
+function str(len) {
+  for (var i = 0, s = ''; i < len; i++) s += character();
+  return s;
+}
+
+}, {}],
+9: [function(require, module, exports) {
 
 /**
  * Module dependencies.
  */
 
-var events = require('event');
-var delegate = require('delegate');
+try {
+  var events = require('event');
+} catch(err) {
+  var events = require('component-event');
+}
+
+try {
+  var delegate = require('delegate');
+} catch(err) {
+  var delegate = require('component-delegate');
+}
 
 /**
  * Expose `Events`.
@@ -979,8 +1113,8 @@ function parse(event) {
   }
 }
 
-}, {"event":10,"delegate":11}],
-10: [function(require, module, exports) {
+}, {"event":11,"component-event":11,"delegate":12,"component-delegate":12}],
+11: [function(require, module, exports) {
 var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
     unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
     prefix = bind !== 'addEventListener' ? 'on' : '';
@@ -1017,13 +1151,22 @@ exports.unbind = function(el, type, fn, capture){
   return fn;
 };
 }, {}],
-11: [function(require, module, exports) {
+12: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
 
-var closest = require('closest')
-  , event = require('event');
+try {
+  var closest = require('closest');
+} catch(err) {
+  var closest = require('component-closest');
+}
+
+try {
+  var event = require('event');
+} catch(err) {
+  var event = require('component-event');
+}
 
 /**
  * Delegate event `type` to `selector`
@@ -1061,13 +1204,17 @@ exports.unbind = function(el, type, fn, capture){
   event.unbind(el, type, fn, capture);
 };
 
-}, {"closest":12,"event":10}],
-12: [function(require, module, exports) {
+}, {"closest":13,"component-closest":13,"event":11,"component-event":11}],
+13: [function(require, module, exports) {
 /**
  * Module Dependencies
  */
 
-var matches = require('matches-selector')
+try {
+  var matches = require('matches-selector')
+} catch (err) {
+  var matches = require('component-matches-selector')
+}
 
 /**
  * Export `closest`
@@ -1096,13 +1243,17 @@ function closest (el, selector, scope) {
   return matches(el, selector) ? el : null;
 }
 
-}, {"matches-selector":13}],
-13: [function(require, module, exports) {
+}, {"matches-selector":14,"component-matches-selector":14}],
+14: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
 
-var query = require('query');
+try {
+  var query = require('query');
+} catch (err) {
+  var query = require('component-query');
+}
 
 /**
  * Element prototype.
@@ -1145,8 +1296,8 @@ function match(el, selector) {
   return false;
 }
 
-}, {"query":2}],
-9: [function(require, module, exports) {
+}, {"query":2,"component-query":2}],
+10: [function(require, module, exports) {
 
 /**
  * Module dependencies.
@@ -1154,6 +1305,7 @@ function match(el, selector) {
 
 var rndid = require('stephenmathieson/rndid');
 var classes = require('component/classes');
+var events = require('component/events');
 
 /**
  * Expose `Panel`.
@@ -1174,6 +1326,9 @@ function Panel(el, options) {
   this.hiddenClass = options.hiddenClass || null;
   this.el.setAttribute('role', 'tabpanel');
   this.el.id = this.el.id || rndid();
+
+  this.events = events(el, this);
+  this.events.bind('blur');
 }
 
 /**
@@ -1214,74 +1369,26 @@ Panel.prototype.show = function () {
   return this;
 };
 
-}, {"stephenmathieson/rndid":14,"component/classes":15}],
-14: [function(require, module, exports) {
+Panel.prototype.focusTemp = function () {
+  this.el.setAttribute('tabindex', '-1');
+  this.el.focus();
+};
 
-/**
- * Expose `rndid`.
- */
+Panel.prototype.onblur = function (e) {
+  this.el.removeAttribute('tabindex');
+};
 
-exports = module.exports = rndid;
-
-/**
- * Default ID length.
- */
-
-exports.defaultLength = 7;
-
-/**
- * Return a guaranteed unique id of the provided
- * `length`, optionally prefixed with `prefix`.
- *
- * If no length is provided, will use
- * `rndid.defaultLength`.
- *
- * @api private
- * @param {String} [prefix]
- * @param {Number} [length]
- * @return {String}
- */
-
-function rndid(prefix, length) {
-  if ('number' == typeof prefix)
-    length = prefix, prefix = '';
-  length = length || exports.defaultLength;
-  var id = (prefix || '') + str(length);
-  if (document.getElementById(id)) return rndid(prefix, length);
-  return id;
-}
-
-/**
- * Generate a random alpha-char.
- *
- * @api private
- * @return {String}
- */
-
-function character() {
-  return String.fromCharCode(Math.floor(Math.random() * 25) + 97);
-}
-
-/**
- * Generate a random alpha-string of `len` characters.
- *
- * @api private
- * @param {Number} len
- * @return {String}
- */
-
-function str(len) {
-  for (var i = 0, s = ''; i < len; i++) s += character();
-  return s;
-}
-
-}, {}],
+}, {"stephenmathieson/rndid":8,"component/classes":15,"component/events":9}],
 15: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
 
-var index = require('indexof');
+try {
+  var index = require('indexof');
+} catch (err) {
+  var index = require('component-indexof');
+}
 
 /**
  * Whitespace regexp.
@@ -1465,7 +1572,7 @@ ClassList.prototype.contains = function(name){
     : !! ~index(this.array(), name);
 };
 
-}, {"indexof":16}],
+}, {"indexof":16,"component-indexof":16}],
 16: [function(require, module, exports) {
 module.exports = function(arr, obj){
   if (arr.indexOf) return arr.indexOf(obj);
