@@ -5,6 +5,7 @@
 
 var rndid = require('stephenmathieson/rndid');
 var classes = require('component/classes');
+var events = require('component/events');
 
 /**
  * Expose `Panel`.
@@ -25,6 +26,9 @@ function Panel(el, options) {
   this.hiddenClass = options.hiddenClass || null;
   this.el.setAttribute('role', 'tabpanel');
   this.el.id = this.el.id || rndid();
+
+  this.events = events(el, this);
+  this.events.bind('blur');
 }
 
 /**
@@ -63,4 +67,13 @@ Panel.prototype.show = function () {
     this.el.style.display = 'block';
   }
   return this;
+};
+
+Panel.prototype.focusTemp = function () {
+  this.el.setAttribute('tabindex', '-1');
+  this.el.focus();
+};
+
+Panel.prototype.onblur = function (e) {
+  this.el.removeAttribute('tabindex');
 };

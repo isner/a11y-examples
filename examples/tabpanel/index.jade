@@ -7,10 +7,14 @@ block vars
 block content
   #tabpanel-widget
     ul.nav.nav-tabs
-      li: a(href="#" data-panel="jerry-panel") Jerry
-      li: a(href="#" data-panel="elaine-panel") Elaine
-      li: a(href="#" data-panel="george-panel") George
-      li: a(href="#" data-panel="kramer-panel") Kramer
+      li
+        a#jerry-tab(data-panel="jerry-panel") Jerry
+      li
+        a#elaine-tab(data-panel="elaine-panel") Elaine
+      li
+        a#george-tab(data-panel="george-panel") George
+      li
+        a#kramer-tab(data-panel="kramer-panel") Kramer
     .panels
       #jerry-panel.panel.panel-default
         .panel-body

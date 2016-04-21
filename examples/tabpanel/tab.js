@@ -3,8 +3,10 @@
  * Module dependencies.
  */
 
+var rndid = require('stephenmathieson/rndid');
 var Emitter = require('component/emitter');
 var events = require('component/events');
+var query = require('component/query');
 var Panel = require('./panel');
 
 /**
@@ -23,8 +25,9 @@ module.exports = Tab;
 
 function Tab(el, options) {
   this.el = el;
+  this.opts = options || {};
   this.panel = new Panel(options.panelGetter(el), options);
-  this.selectFun = options.selectFun;
+  this.el.id = this.el.id || rndid();
 
   this.events = events(el, this);
   this.events.bind('click');
@@ -32,6 +35,8 @@ function Tab(el, options) {
 
   this.el.setAttribute('aria-controls', this.panel.el.id);
   this.el.setAttribute('role', 'tab');
+
+  this.panel.el.setAttribute('aria-labelledby', this.el.id);
 }
 
 /**
@@ -67,9 +72,9 @@ Tab.prototype.select = function () {
   this.panel.show();
 
   // Execute any custom function specified during config.
-  var selectFun = this.selectFun;
+  var selectFun = this.opts.selectFun;
   if (selectFun && typeof selectFun == 'function') {
-    this.selectFun(this);
+    selectFun(this);
   }
 
   return this;
@@ -109,4 +114,47 @@ Tab.prototype.onkeydown = function (e) {
     e.preventDefault();
     this.emit('navigated', 'next');
   }
+  // Tab pressed
+  else if (key === 9 && !e.shiftKey) {
+    e.preventDefault();
+    var panel = this.panel;
+
+    if (this.opts.suppressMain) {
+      suppressMain(function () {
+        panel.focusTemp();
+      }, 100);
+    }
+    else {
+      panel.focusTemp();
+    }
+  }
 };
+
+/**
+ * Suppresses "main" landmark semantics,
+ * and reapplies them after a specified `time`.
+ * Executes a given `fun` in the interim.
+ *
+ * @param  {Function} fun
+ * @param  {Number} time - milliseconds
+ */
+
+function suppressMain(fun, time) {
+  var mains = query.all('main, [role="main"]');
+  if (!mains.length) {
+    return fun();
+  }
+  [].slice.call(mains).forEach(function (main) {
+    var role = main.getAttribute('role');
+    main.setAttribute('role', 'presentation');
+    fun();
+    window.setTimeout(function () {
+      if (role) {
+        main.setAttribute('role', role);
+      }
+      else {
+        main.removeAttribute('role');
+      }
+    }, time);
+  });
+}

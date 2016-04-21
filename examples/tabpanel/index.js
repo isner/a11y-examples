@@ -76,7 +76,19 @@ var tp = new Tabpanel(el, {
 
   selectFun: function (tab) {
     console.log('"%s" tab selected', tab.el.innerText);
-  }
+  },
+
+  /**
+   * [optional]
+   * Temporarily suppress any parent's "main" role when Tabbing
+   * from the selected Tab to the Tabpanel.
+   *
+   * NOTE: This option is designed specifically to sidestep a VO/OSX bug.
+   *
+   * @type {Boolean}
+   */
+
+  suppressMain: true
 
 });
 
