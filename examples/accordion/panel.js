@@ -48,6 +48,7 @@ Emitter(Panel.prototype);
 Panel.prototype.show = function () {
   classes(this.el).remove('hidden');
   this.el.setAttribute('aria-hidden', 'false');
+  this._isHidden = false;
   return this;
 };
 
@@ -62,6 +63,7 @@ Panel.prototype.show = function () {
 Panel.prototype.hide = function () {
   classes(this.el).add('hidden');
   this.el.setAttribute('aria-hidden', 'true');
+  this._isHidden = true;
   return this;
 };
 

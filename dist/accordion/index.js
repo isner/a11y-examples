@@ -900,7 +900,7 @@ Pair.prototype.onkeydown = function (e) {
     this.emit('select', { val: 'last' });
   }
   // Tab pressed
-  else if (key === 9 && !e.shiftKey) {
+  else if (key === 9 && !e.shiftKey && !this.panel._isHidden) {
     e.preventDefault();
     var panel = this.panel;
 
@@ -1235,6 +1235,7 @@ Emitter(Panel.prototype);
 Panel.prototype.show = function () {
   classes(this.el).remove('hidden');
   this.el.setAttribute('aria-hidden', 'false');
+  this._isHidden = false;
   return this;
 };
 
@@ -1249,6 +1250,7 @@ Panel.prototype.show = function () {
 Panel.prototype.hide = function () {
   classes(this.el).add('hidden');
   this.el.setAttribute('aria-hidden', 'true');
+  this._isHidden = true;
   return this;
 };
 

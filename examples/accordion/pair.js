@@ -104,7 +104,7 @@ Pair.prototype.onkeydown = function (e) {
     this.emit('select', { val: 'last' });
   }
   // Tab pressed
-  else if (key === 9 && !e.shiftKey) {
+  else if (key === 9 && !e.shiftKey && !this.panel._isHidden) {
     e.preventDefault();
     var panel = this.panel;
 
