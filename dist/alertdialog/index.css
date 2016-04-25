@@ -1,5 +1,6 @@
 html {
   font-family: Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 body {
   padding: 10px;
