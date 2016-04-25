@@ -20,11 +20,34 @@ var INDEX = 'index.js';
 var DIST = 'dist';
 
 /**
+ * `default` task.
+ */
+
+gulp.task('default', [
+  'clean',
+  'bower',
+  'views',
+  'styles',
+  'scripts'
+]);
+
+/**
  * Delete the built directory.
  */
 
 gulp.task('clean', function () {
   fs.removeSync(DIST);
+});
+
+/**
+ * Copy bower components to distribution directory.
+ */
+
+gulp.task('bower', function () {
+  fs.copySync(path.join(BOWER, 'jquery/dist/jquery.min.js'),
+    path.join(DIST, 'jquery.min.js'));
+  fs.copySync(path.join(BOWER, 'jquery-ui/jquery-ui.min.js'),
+    path.join(DIST, 'jquery-ui.min.js'));
 });
 
 /**
@@ -65,47 +88,24 @@ gulp.task('scripts', function () {
     if (fs.existsSync(entryPath)) {
 
       new Duo(__dirname)
-        .entry(path.join(EXAMPLES, exampleDir, INDEX))
-        .copy(true)
-        .run(function (err, data) {
+      .entry(path.join(EXAMPLES, exampleDir, INDEX))
+      .copy(true)
+      .run(function (err, data) {
+        if (err) throw err;
+
+        var target = path.join(DIST, exampleDir, INDEX);
+
+        fs.ensureFile(target, function (err) {
           if (err) throw err;
 
-          var target = path.join(DIST, exampleDir, INDEX);
-
-          fs.ensureFile(target, function (err) {
+          fs.writeFile(target, data, function (err) {
             if (err) throw err;
-
-            fs.writeFile(target, data, function (err) {
-              if (err) throw err;
-            });
           });
         });
+      });
     }
   });
 });
-
-/**
- * Copy bower components to distribution directory.
- */
-
-gulp.task('bower', function () {
-  fs.copySync(path.join(BOWER, 'jquery/dist/jquery.min.js'),
-    path.join(DIST, 'jquery.min.js'));
-  fs.copySync(path.join(BOWER, 'jquery-ui/jquery-ui.min.js'),
-    path.join(DIST, 'jquery-ui.min.js'));
-});
-
-/**
- * `default` task.
- */
-
-gulp.task('default', [
-  'clean',
-  'bower',
-  'views',
-  'styles',
-  'scripts'
-]);
 
 /**
  * `watch` task.
