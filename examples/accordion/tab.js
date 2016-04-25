@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+var rndid = require('stephenmathieson/rndid');
 var Emitter = require('component/emitter');
 var query = require('component/query');
 
@@ -22,6 +23,10 @@ module.exports = Tab;
 
 function Tab(selector, el) {
   this.el = query(selector, el);
+  this.el.setAttribute('role', 'tab');
+  this.el.setAttribute('aria-selected', 'false');
+  this.el.setAttribute('aria-expanded', 'false');
+  this.el.id = this.el.id || rndid();
 }
 
 /**

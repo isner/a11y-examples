@@ -708,10 +708,10 @@ Emitter.prototype.hasListeners = function(event){
  * Module dependencies.
  */
 
+var suppressMain = require('../../lib/suppress-main');
 var rndid = require('stephenmathieson/rndid');
 var Emitter = require('component/emitter');
 var events = require('component/events');
-var query = require('component/query');
 var Panel = require('./panel');
 
 /**
@@ -835,6 +835,21 @@ Tab.prototype.onkeydown = function (e) {
   }
 };
 
+}, {"../../lib/suppress-main":8,"stephenmathieson/rndid":9,"component/emitter":6,"component/events":10,"./panel":11}],
+8: [function(require, module, exports) {
+
+/**
+ * Module dependencies.
+ */
+
+var query = require('component/query');
+
+/**
+ * Expose `suppressMain`.
+ */
+
+module.exports = suppressMain;
+
 /**
  * Suppresses "main" landmark semantics,
  * and reapplies them after a specified `time`.
@@ -864,8 +879,8 @@ function suppressMain(fun, time) {
   });
 }
 
-}, {"stephenmathieson/rndid":8,"component/emitter":6,"component/events":9,"component/query":2,"./panel":10}],
-8: [function(require, module, exports) {
+}, {"component/query":2}],
+9: [function(require, module, exports) {
 
 /**
  * Expose `rndid`.
@@ -926,7 +941,7 @@ function str(len) {
 }
 
 }, {}],
-9: [function(require, module, exports) {
+10: [function(require, module, exports) {
 
 /**
  * Module dependencies.
@@ -1113,8 +1128,8 @@ function parse(event) {
   }
 }
 
-}, {"event":11,"component-event":11,"delegate":12,"component-delegate":12}],
-11: [function(require, module, exports) {
+}, {"event":12,"component-event":12,"delegate":13,"component-delegate":13}],
+12: [function(require, module, exports) {
 var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
     unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
     prefix = bind !== 'addEventListener' ? 'on' : '';
@@ -1151,7 +1166,7 @@ exports.unbind = function(el, type, fn, capture){
   return fn;
 };
 }, {}],
-12: [function(require, module, exports) {
+13: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
@@ -1204,8 +1219,8 @@ exports.unbind = function(el, type, fn, capture){
   event.unbind(el, type, fn, capture);
 };
 
-}, {"closest":13,"component-closest":13,"event":11,"component-event":11}],
-13: [function(require, module, exports) {
+}, {"closest":14,"component-closest":14,"event":12,"component-event":12}],
+14: [function(require, module, exports) {
 /**
  * Module Dependencies
  */
@@ -1243,8 +1258,8 @@ function closest (el, selector, scope) {
   return matches(el, selector) ? el : null;
 }
 
-}, {"matches-selector":14,"component-matches-selector":14}],
-14: [function(require, module, exports) {
+}, {"matches-selector":15,"component-matches-selector":15}],
+15: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
@@ -1297,7 +1312,7 @@ function match(el, selector) {
 }
 
 }, {"query":2,"component-query":2}],
-10: [function(require, module, exports) {
+11: [function(require, module, exports) {
 
 /**
  * Module dependencies.
@@ -1378,8 +1393,8 @@ Panel.prototype.onblur = function (e) {
   this.el.removeAttribute('tabindex');
 };
 
-}, {"stephenmathieson/rndid":8,"component/classes":15,"component/events":9}],
-15: [function(require, module, exports) {
+}, {"stephenmathieson/rndid":9,"component/classes":16,"component/events":10}],
+16: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
@@ -1572,8 +1587,8 @@ ClassList.prototype.contains = function(name){
     : !! ~index(this.array(), name);
 };
 
-}, {"indexof":16,"component-indexof":16}],
-16: [function(require, module, exports) {
+}, {"indexof":17,"component-indexof":17}],
+17: [function(require, module, exports) {
 module.exports = function(arr, obj){
   if (arr.indexOf) return arr.indexOf(obj);
   for (var i = 0; i < arr.length; ++i) {

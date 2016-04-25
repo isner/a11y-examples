@@ -12,5 +12,6 @@ var el = document.querySelector(selector);
 new Accordion(el, {
   pair: '.panel',
   tab: '.panel-heading',
-  panel: '.panel-body'
+  panel: '.panel-body',
+  suppressMain: true
 });

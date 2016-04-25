@@ -24,8 +24,12 @@ module.exports = Panel;
 
 function Panel(selector, el) {
   this.el = query(selector, el);
+  this.el.setAttribute('role', 'tabpanel');
+  this.el.setAttribute('aria-hidden', 'true');
+
   this.events = events(el, this);
   this.events.bind('keydown');
+  this.events.bind('blur');
 }
 
 /**
@@ -77,4 +81,13 @@ Panel.prototype.onkeydown = function (e) {
     this.emit('focus-tab');
   }
   return this;
+};
+
+Panel.prototype.focusTemp = function () {
+  this.el.setAttribute('tabindex', '-1');
+  this.el.focus();
+};
+
+Panel.prototype.onblur = function (e) {
+  this.el.removeAttribute('tabindex');
 };

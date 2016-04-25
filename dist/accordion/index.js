@@ -100,7 +100,8 @@ var el = document.querySelector(selector);
 new Accordion(el, {
   pair: '.panel',
   tab: '.panel-heading',
-  panel: '.panel-body'
+  panel: '.panel-body',
+  suppressMain: true
 });
 
 }, {"./accordion":2}],
@@ -125,23 +126,26 @@ module.exports = Accordion;
  * Creates a new instance of `Accordion`.
  *
  * @param {HTMLElement} el - outermost container
- * @param {Object} selectors
+ * @param {Object} config
  * @api public
  */
 
-function Accordion(el, selectors) {
+function Accordion(el, config) {
   if (!(this instanceof Accordion)) {
-    return new Accordion(selectors);
+    return new Accordion(config);
   }
   this.el = el;
   this.pairs = [];
   this.selectedIndex = 0;
 
+  this.el.setAttribute('role', 'tablist');
+  this.el.setAttribute('aria-multiselectable', 'true');
+
   var self = this;
-  var pairs = query.all(selectors.pair);
+  var pairs = query.all(config.pair);
 
   [].slice.call(pairs).forEach(function (el, i) {
-    var pair = self.pairs[i] = new Pair(el, selectors, i)
+    var pair = self.pairs[i] = new Pair(el, config, i)
       .collapse()
       .on('select', function (data) {
         self.updateIndex(data.val);
@@ -795,6 +799,7 @@ exports.engine = function(obj){
  * Module dependencies.
  */
 
+var suppressMain = require('../../lib/suppress-main');
 var Emitter = require('component/emitter');
 var events = require('component/events');
 var Panel = require('./panel');
@@ -813,23 +818,30 @@ module.exports = Pair;
  * Creates a new `Pair`.
  *
  * @param {HTMLElement} el
- * @param {Object} selectors
+ * @param {Object} config
  * @param {Number} i
  * @api public
  */
 
-function Pair(el, selectors, i) {
+function Pair(el, config, i) {
   var self = this;
+  this.config = config;
+
   this.el = el;
+  this.el.setAttribute('role', 'presentation');
+
   this.i = i;
-  this.tab = new Tab(selectors.tab, el);
-  this.panel = new Panel(selectors.panel, el)
+  this.tab = new Tab(config.tab, el);
+  this.panel = new Panel(config.panel, el)
     .on('focus-tab', function () {
       self.emit('select', { val: self.i });
     });
+
+  this.panel.el.setAttribute('aria-labelledby', this.tab.el.id);
+
   this.events = events(el, this);
-  this.events.bind('click ' + selectors.tab);
-  this.events.bind('keydown ' + selectors.tab);
+  this.events.bind('click ' + config.tab);
+  this.events.bind('keydown ' + config.tab);
 }
 
 /**
@@ -886,6 +898,20 @@ Pair.prototype.onkeydown = function (e) {
   else if (key == 35) {
     e.preventDefault();
     this.emit('select', { val: 'last' });
+  }
+  // Tab pressed
+  else if (key === 9 && !e.shiftKey) {
+    e.preventDefault();
+    var panel = this.panel;
+
+    if (this.config.suppressMain) {
+      suppressMain(function () {
+        panel.focusTemp();
+      }, 100);
+    }
+    else {
+      panel.focusTemp();
+    }
   }
   return this;
 };
@@ -947,8 +973,52 @@ Pair.prototype.select = function () {
   this.tab.el.focus();
 };
 
-}, {"component/emitter":11,"component/events":4,"./panel":12,"./tab":13}],
+}, {"../../lib/suppress-main":11,"component/emitter":12,"component/events":4,"./panel":13,"./tab":14}],
 11: [function(require, module, exports) {
+
+/**
+ * Module dependencies.
+ */
+
+var query = require('component/query');
+
+/**
+ * Expose `suppressMain`.
+ */
+
+module.exports = suppressMain;
+
+/**
+ * Suppresses "main" landmark semantics,
+ * and reapplies them after a specified `time`.
+ * Executes a given `fun` in the interim.
+ *
+ * @param  {Function} fun
+ * @param  {Number} time - milliseconds
+ */
+
+function suppressMain(fun, time) {
+  var mains = query.all('main, [role="main"]');
+  if (!mains.length) {
+    return fun();
+  }
+  [].slice.call(mains).forEach(function (main) {
+    var role = main.getAttribute('role');
+    main.setAttribute('role', 'presentation');
+    fun();
+    window.setTimeout(function () {
+      if (role) {
+        main.setAttribute('role', role);
+      }
+      else {
+        main.removeAttribute('role');
+      }
+    }, time);
+  });
+}
+
+}, {"component/query":5}],
+12: [function(require, module, exports) {
 
 /**
  * Expose `Emitter`.
@@ -1114,7 +1184,7 @@ Emitter.prototype.hasListeners = function(event){
 };
 
 }, {}],
-12: [function(require, module, exports) {
+13: [function(require, module, exports) {
 
 /**
  * Module dependencies.
@@ -1141,8 +1211,12 @@ module.exports = Panel;
 
 function Panel(selector, el) {
   this.el = query(selector, el);
+  this.el.setAttribute('role', 'tabpanel');
+  this.el.setAttribute('aria-hidden', 'true');
+
   this.events = events(el, this);
   this.events.bind('keydown');
+  this.events.bind('blur');
 }
 
 /**
@@ -1195,8 +1269,18 @@ Panel.prototype.onkeydown = function (e) {
   }
   return this;
 };
-}, {"component/emitter":11,"component/classes":14,"component/events":4,"component/query":5}],
-14: [function(require, module, exports) {
+
+Panel.prototype.focusTemp = function () {
+  this.el.setAttribute('tabindex', '-1');
+  this.el.focus();
+};
+
+Panel.prototype.onblur = function (e) {
+  this.el.removeAttribute('tabindex');
+};
+
+}, {"component/emitter":12,"component/classes":15,"component/events":4,"component/query":5}],
+15: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
@@ -1389,8 +1473,8 @@ ClassList.prototype.contains = function(name){
     : !! ~index(this.array(), name);
 };
 
-}, {"indexof":15,"component-indexof":15}],
-15: [function(require, module, exports) {
+}, {"indexof":16,"component-indexof":16}],
+16: [function(require, module, exports) {
 module.exports = function(arr, obj){
   if (arr.indexOf) return arr.indexOf(obj);
   for (var i = 0; i < arr.length; ++i) {
@@ -1399,12 +1483,13 @@ module.exports = function(arr, obj){
   return -1;
 };
 }, {}],
-13: [function(require, module, exports) {
+14: [function(require, module, exports) {
 
 /**
  * Module dependencies.
  */
 
+var rndid = require('stephenmathieson/rndid');
 var Emitter = require('component/emitter');
 var query = require('component/query');
 
@@ -1424,6 +1509,10 @@ module.exports = Tab;
 
 function Tab(selector, el) {
   this.el = query(selector, el);
+  this.el.setAttribute('role', 'tab');
+  this.el.setAttribute('aria-selected', 'false');
+  this.el.setAttribute('aria-expanded', 'false');
+  this.el.id = this.el.id || rndid();
 }
 
 /**
@@ -1459,4 +1548,65 @@ Tab.prototype.collapse = function () {
   return this;
 };
 
-}, {"component/emitter":11,"component/query":5}]}, {}, {"1":""})
+}, {"stephenmathieson/rndid":17,"component/emitter":12,"component/query":5}],
+17: [function(require, module, exports) {
+
+/**
+ * Expose `rndid`.
+ */
+
+exports = module.exports = rndid;
+
+/**
+ * Default ID length.
+ */
+
+exports.defaultLength = 7;
+
+/**
+ * Return a guaranteed unique id of the provided
+ * `length`, optionally prefixed with `prefix`.
+ *
+ * If no length is provided, will use
+ * `rndid.defaultLength`.
+ *
+ * @api private
+ * @param {String} [prefix]
+ * @param {Number} [length]
+ * @return {String}
+ */
+
+function rndid(prefix, length) {
+  if ('number' == typeof prefix)
+    length = prefix, prefix = '';
+  length = length || exports.defaultLength;
+  var id = (prefix || '') + str(length);
+  if (document.getElementById(id)) return rndid(prefix, length);
+  return id;
+}
+
+/**
+ * Generate a random alpha-char.
+ *
+ * @api private
+ * @return {String}
+ */
+
+function character() {
+  return String.fromCharCode(Math.floor(Math.random() * 25) + 97);
+}
+
+/**
+ * Generate a random alpha-string of `len` characters.
+ *
+ * @api private
+ * @param {Number} len
+ * @return {String}
+ */
+
+function str(len) {
+  for (var i = 0, s = ''; i < len; i++) s += character();
+  return s;
+}
+
+}, {}]}, {}, {"1":""})

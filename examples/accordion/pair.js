@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+var suppressMain = require('../../lib/suppress-main');
 var Emitter = require('component/emitter');
 var events = require('component/events');
 var Panel = require('./panel');
@@ -21,23 +22,30 @@ module.exports = Pair;
  * Creates a new `Pair`.
  *
  * @param {HTMLElement} el
- * @param {Object} selectors
+ * @param {Object} config
  * @param {Number} i
  * @api public
  */
 
-function Pair(el, selectors, i) {
+function Pair(el, config, i) {
   var self = this;
+  this.config = config;
+
   this.el = el;
+  this.el.setAttribute('role', 'presentation');
+
   this.i = i;
-  this.tab = new Tab(selectors.tab, el);
-  this.panel = new Panel(selectors.panel, el)
+  this.tab = new Tab(config.tab, el);
+  this.panel = new Panel(config.panel, el)
     .on('focus-tab', function () {
       self.emit('select', { val: self.i });
     });
+
+  this.panel.el.setAttribute('aria-labelledby', this.tab.el.id);
+
   this.events = events(el, this);
-  this.events.bind('click ' + selectors.tab);
-  this.events.bind('keydown ' + selectors.tab);
+  this.events.bind('click ' + config.tab);
+  this.events.bind('keydown ' + config.tab);
 }
 
 /**
@@ -94,6 +102,20 @@ Pair.prototype.onkeydown = function (e) {
   else if (key == 35) {
     e.preventDefault();
     this.emit('select', { val: 'last' });
+  }
+  // Tab pressed
+  else if (key === 9 && !e.shiftKey) {
+    e.preventDefault();
+    var panel = this.panel;
+
+    if (this.config.suppressMain) {
+      suppressMain(function () {
+        panel.focusTemp();
+      }, 100);
+    }
+    else {
+      panel.focusTemp();
+    }
   }
   return this;
 };

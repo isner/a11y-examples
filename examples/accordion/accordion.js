@@ -18,23 +18,26 @@ module.exports = Accordion;
  * Creates a new instance of `Accordion`.
  *
  * @param {HTMLElement} el - outermost container
- * @param {Object} selectors
+ * @param {Object} config
  * @api public
  */
 
-function Accordion(el, selectors) {
+function Accordion(el, config) {
   if (!(this instanceof Accordion)) {
-    return new Accordion(selectors);
+    return new Accordion(config);
   }
   this.el = el;
   this.pairs = [];
   this.selectedIndex = 0;
 
+  this.el.setAttribute('role', 'tablist');
+  this.el.setAttribute('aria-multiselectable', 'true');
+
   var self = this;
-  var pairs = query.all(selectors.pair);
+  var pairs = query.all(config.pair);
 
   [].slice.call(pairs).forEach(function (el, i) {
-    var pair = self.pairs[i] = new Pair(el, selectors, i)
+    var pair = self.pairs[i] = new Pair(el, config, i)
       .collapse()
       .on('select', function (data) {
         self.updateIndex(data.val);
