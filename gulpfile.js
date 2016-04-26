@@ -115,4 +115,5 @@ gulp.task('watch', function () {
   gulp.watch('examples/**/index.jade', ['views']);
   gulp.watch('examples/**/index.styl', ['styles']);
   gulp.watch('examples/**/*.{js,html}', ['scripts']);
+  gulp.watch('lib/*', ['scripts']);
 });

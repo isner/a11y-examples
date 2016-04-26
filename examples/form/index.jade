@@ -1,0 +1,29 @@
+
+extends ../layout
+
+block vars
+  - var heading = 'Form Validation'
+
+block content
+  form
+    p Please provide the following information and click "Create" to create an account.
+    .error-summary
+    
+    .field(data-name="name")
+      .error
+      label(for="name-input") Name
+      input#name-input(type="text" name="name" aria-required="true")
+      
+    .field(data-name="email")
+      .error
+      label(for="email-input") Email
+      input#email-input(type="text" name="email" aria-required="true" data-validator="email")
+      
+    .field
+      button(type="submit") Create
+
+block scripts
+  script(src="index.js")
+
+block styles
+  link(rel="stylesheet" href="index.css")

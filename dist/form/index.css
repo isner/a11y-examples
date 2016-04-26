@@ -1,0 +1,45 @@
+html {
+  font-family: Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  padding: 10px;
+}
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+*:focus {
+  outline-width: 1px;
+}
+#content-wrapper {
+  max-width: 800px;
+}
+.panel-heading h1,
+.panel-heading h2,
+.panel-heading h3,
+.panel-heading h4,
+.panel-heading h5,
+.panel-heading h6 {
+  margin: 0.1em;
+}
+.error-summary {
+  margin-bottom: 1em;
+  padding: 1em;
+  border: 1px solid #ccc;
+  background-color: #eee;
+}
+.error-summary span {
+  margin-right: 0.5em;
+}
+.field {
+  margin-bottom: 1em;
+}
+.field .error {
+  margin-bottom: 0.5em;
+  color: #df0000;
+}
+.field label {
+  display: block;
+}
