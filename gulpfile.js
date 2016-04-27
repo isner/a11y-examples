@@ -4,7 +4,6 @@
  */
 
 var stylus = require('gulp-stylus');
-var uglify = require('uglify-js');
 var jade = require('gulp-jade');
 var fs = require('fs-extra');
 var gulp = require('gulp');
