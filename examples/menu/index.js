@@ -1,17 +1,20 @@
 
-var Megamenu = require('./megamenu');
+/**
+ * Module dependencies.
+ */
 
-var selector = '#myMegamenu';
+var Megamenu = require('./megamenu');
 
 /**
  * Create new Megamenu using the selector provided.
  */
 
-var menu = document.querySelector(selector);
-
-if (!menu) {
-  console.error('query failed: %s', selector);
-}
+var menu = document.querySelector('#myMegamenu');
 
 menu = new Megamenu(menu);
-console.log(menu);
+
+/**
+ * Display the source files.
+ */
+
+require('../../lib/display-source')(require('./source'));

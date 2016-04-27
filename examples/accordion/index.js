@@ -1,13 +1,16 @@
 
-var Accordion = require('./accordion');
+/**
+ * Module dependencies.
+ */
 
-var selector = '#myAccordion';
+var Accordion = require('./accordion');
+var query = require('component/query');
 
 /**
  * Create an Accordion using the selector provided.
  */
 
-var el = document.querySelector(selector);
+var el = query('#myAccordion');
 
 new Accordion(el, {
   pair: '.panel',
@@ -15,3 +18,9 @@ new Accordion(el, {
   panel: '.panel-body',
   suppressMain: true
 });
+
+/**
+ * Display the source files.
+ */
+
+require('../../lib/display-source')(require('./source'));

@@ -1,4 +1,8 @@
 
+/**
+ * Module dependencies.
+ */
+
 var query = require('component/query');
 var Alert = require('./alert');
 
@@ -37,3 +41,9 @@ form.addEventListener('submit', function (e) {
   input.select();
   alert.show();
 });
+
+/**
+ * Display the source files.
+ */
+
+require('../../lib/display-source')(require('./source'));

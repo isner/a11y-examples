@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+require('../../lib/display-source')(require('./source'));
 var validator = require('chriso/validator.js');
 var query = require('component/query');
 var Form = require('./form');

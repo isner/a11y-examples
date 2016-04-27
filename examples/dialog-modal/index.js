@@ -19,3 +19,9 @@ var title = 'Types of Message Dialogs';
  */
 
 new DialogModal(trigger, content, title, false);
+
+/**
+ * Display the source files.
+ */
+
+require('../../lib/display-source')(require('./source'));

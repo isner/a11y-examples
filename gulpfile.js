@@ -3,8 +3,9 @@
  * Module dependencies.
  */
 
-var jade = require('gulp-jade');
 var stylus = require('gulp-stylus');
+var uglify = require('uglify-js');
+var jade = require('gulp-jade');
 var fs = require('fs-extra');
 var gulp = require('gulp');
 var path = require('path');
@@ -82,10 +83,23 @@ gulp.task('scripts', function () {
 
   exampleDirs.forEach(function (exampleDir) {
 
-    var entryPath =
-      path.join(__dirname, EXAMPLES, exampleDir, INDEX);
+    var entryPath = path.join(__dirname, EXAMPLES, exampleDir, INDEX);
 
     if (fs.existsSync(entryPath)) {
+
+      // Create client module "source.js" containing array
+      // of the example' source files.
+      var pathToSrc = path.join(__dirname, EXAMPLES, exampleDir);
+      var srcArr = fs.readdirSync(pathToSrc)
+      .map((file) => {
+        var data = fs.readFileSync(path.join(__dirname, EXAMPLES, exampleDir, file), 'utf-8');
+        return {
+          name: file,
+          code: data
+        };
+      });
+      var str = 'module.exports = ' + JSON.stringify(srcArr) + ';';
+      fs.writeFileSync(path.join(pathToSrc, 'source.js'), str);
 
       new Duo(__dirname)
       .entry(path.join(EXAMPLES, exampleDir, INDEX))

@@ -32,3 +32,9 @@ new Expanded(trigger, area, {
     animate();
   }
 });
+
+/**
+ * Display the source files.
+ */
+
+require('../../lib/display-source')(require('./source'));

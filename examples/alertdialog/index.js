@@ -19,3 +19,9 @@ var title = 'Example Alert';
  */
 
 new DialogModal(trigger, content, title, true);
+
+/**
+ * Display the source files.
+ */
+
+require('../../lib/display-source')(require('./source'));

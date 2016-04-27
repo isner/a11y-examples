@@ -1,4 +1,5 @@
 {
+  "esversion": 6,
   "laxbreak": true,
   "node": true,
   "strict": false

@@ -1,14 +1,16 @@
 
+/**
+ * Module dependencies.
+ */
+
 var query = require('component/query');
 var Tabpanel = require('./tabpanel');
 
-var selector = '#tabpanel-widget';
-
 /**
- * Create a Tabpanel using the selector provided.
+ * Create a Tabpanel on `el`.
  */
 
-var el = document.querySelector(selector);
+var el = query('#tabpanel-widget');
 
 var tp = new Tabpanel(el, {
 
@@ -92,4 +94,8 @@ var tp = new Tabpanel(el, {
 
 });
 
-console.log(tp);
+/**
+ * Display the source files.
+ */
+
+require('../../lib/display-source')(require('./source'));
