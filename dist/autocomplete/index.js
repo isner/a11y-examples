@@ -10,11 +10,10 @@
    * Require `name`.
    *
    * @param {String} name
-   * @param {Boolean} jumped
    * @api public
    */
 
-  function require(name, jumped){
+  function require(name){
     if (cache[name]) return cache[name].exports;
     if (modules[name]) return call(name, require);
     throw new Error('cannot find module "' + name + '"');
@@ -30,21 +29,26 @@
    */
 
   function call(id, require){
-    var m = { exports: {} };
+    var m = cache[id] = { exports: {} };
     var mod = modules[id];
     var name = mod[2];
     var fn = mod[0];
+    var threw = true;
 
-    fn.call(m.exports, function(req){
-      var dep = modules[id][1][req];
-      return require(dep || req);
-    }, m, m.exports, outer, modules, cache, entries);
-
-    // store to cache after successful resolve
-    cache[id] = m;
-
-    // expose as `name`.
-    if (name) cache[name] = cache[id];
+    try {
+      fn.call(m.exports, function(req){
+        var dep = modules[id][1][req];
+        return require(dep || req);
+      }, m, m.exports, outer, modules, cache, entries);
+      threw = false;
+    } finally {
+      if (threw) {
+        delete cache[id];
+      } else if (name) {
+        // expose as 'name'.
+        cache[name] = cache[id];
+      }
+    }
 
     return cache[id].exports;
   }
@@ -87,6 +91,7 @@
 })({
 1: [function(require, module, exports) {
 
+var displaySource = require('../../lib/display-source');
 var AutoComplete = require('./autocomplete');
 
 var inputEl = document.getElementById('character-input');
@@ -110,10 +115,72 @@ var autoComplete = new AutoComplete(inputEl)
   ])
   .render();
 
-console.log(autoComplete);
+displaySource(require('./source'));
 
-}, {"./autocomplete":2}],
+}, {"../../lib/display-source":2,"./autocomplete":3,"./source":4}],
 2: [function(require, module, exports) {
+
+var query = require('component/query');
+
+module.exports = displaySource;
+
+function displaySource(sourceArr) {
+  if (sourceArr.length == 1 && sourceArr[0].name == 'source.js') {
+    return;
+  }
+  var cage = query('#source');
+  var sectionHeading = document.createElement('h2');
+  sectionHeading.innerHTML = 'Source Files';
+  sectionHeading.className = 'page-header';
+  cage.appendChild(sectionHeading);
+
+  sourceArr.forEach((file) => {
+    var isSourceJs = file.name == 'source.js';
+    var isHtml = ~file.name.search('.html');
+    var isJade = ~file.name.search('.jade');
+    var isStyl = ~file.name.search('.styl');
+    var isText = ~file.name.search('.txt');
+
+    if (isSourceJs || isHtml || isJade || isStyl || isText) {
+      return;
+    }
+    var heading = document.createElement('h3');
+    var code = document.createElement('pre');
+
+    heading.innerHTML = file.name;
+    code.innerHTML = file.code;
+
+    cage.appendChild(heading);
+    cage.appendChild(code);
+  });
+}
+
+}, {"component/query":5}],
+5: [function(require, module, exports) {
+function one(selector, el) {
+  return el.querySelector(selector);
+}
+
+exports = module.exports = function(selector, el){
+  el = el || document;
+  return one(selector, el);
+};
+
+exports.all = function(selector, el){
+  el = el || document;
+  return el.querySelectorAll(selector);
+};
+
+exports.engine = function(obj){
+  if (!obj.one) throw new Error('.one callback required');
+  if (!obj.all) throw new Error('.all callback required');
+  one = obj.one;
+  exports.all = obj.all;
+  return exports;
+};
+
+}, {}],
+3: [function(require, module, exports) {
 
 /**
  * Module dependencies.
@@ -453,8 +520,8 @@ Item.prototype.deselect = function () {
   classes(this.el).remove('selected');
 };
 
-}, {"stephenmathieson/rndid":3,"component/emitter":4,"component/classes":5,"component/events":6,"code42day/dataset":7,"component/query":8}],
-3: [function(require, module, exports) {
+}, {"stephenmathieson/rndid":6,"component/emitter":7,"component/classes":8,"component/events":9,"code42day/dataset":10,"component/query":5}],
+6: [function(require, module, exports) {
 
 /**
  * Expose `rndid`.
@@ -515,7 +582,7 @@ function str(len) {
 }
 
 }, {}],
-4: [function(require, module, exports) {
+7: [function(require, module, exports) {
 
 /**
  * Expose `Emitter`.
@@ -681,7 +748,7 @@ Emitter.prototype.hasListeners = function(event){
 };
 
 }, {}],
-5: [function(require, module, exports) {
+8: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
@@ -874,8 +941,8 @@ ClassList.prototype.contains = function(name){
     : !! ~index(this.array(), name);
 };
 
-}, {"indexof":9,"component-indexof":9}],
-9: [function(require, module, exports) {
+}, {"indexof":11,"component-indexof":11}],
+11: [function(require, module, exports) {
 module.exports = function(arr, obj){
   if (arr.indexOf) return arr.indexOf(obj);
   for (var i = 0; i < arr.length; ++i) {
@@ -884,7 +951,7 @@ module.exports = function(arr, obj){
   return -1;
 };
 }, {}],
-6: [function(require, module, exports) {
+9: [function(require, module, exports) {
 
 /**
  * Module dependencies.
@@ -1071,8 +1138,8 @@ function parse(event) {
   }
 }
 
-}, {"event":10,"component-event":10,"delegate":11,"component-delegate":11}],
-10: [function(require, module, exports) {
+}, {"event":12,"component-event":12,"delegate":13,"component-delegate":13}],
+12: [function(require, module, exports) {
 var bind = window.addEventListener ? 'addEventListener' : 'attachEvent',
     unbind = window.removeEventListener ? 'removeEventListener' : 'detachEvent',
     prefix = bind !== 'addEventListener' ? 'on' : '';
@@ -1109,7 +1176,7 @@ exports.unbind = function(el, type, fn, capture){
   return fn;
 };
 }, {}],
-11: [function(require, module, exports) {
+13: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
@@ -1162,8 +1229,8 @@ exports.unbind = function(el, type, fn, capture){
   event.unbind(el, type, fn, capture);
 };
 
-}, {"closest":12,"component-closest":12,"event":10,"component-event":10}],
-12: [function(require, module, exports) {
+}, {"closest":14,"component-closest":14,"event":12,"component-event":12}],
+14: [function(require, module, exports) {
 /**
  * Module Dependencies
  */
@@ -1201,8 +1268,8 @@ function closest (el, selector, scope) {
   return matches(el, selector) ? el : null;
 }
 
-}, {"matches-selector":13,"component-matches-selector":13}],
-13: [function(require, module, exports) {
+}, {"matches-selector":15,"component-matches-selector":15}],
+15: [function(require, module, exports) {
 /**
  * Module dependencies.
  */
@@ -1254,32 +1321,8 @@ function match(el, selector) {
   return false;
 }
 
-}, {"query":8,"component-query":8}],
-8: [function(require, module, exports) {
-function one(selector, el) {
-  return el.querySelector(selector);
-}
-
-exports = module.exports = function(selector, el){
-  el = el || document;
-  return one(selector, el);
-};
-
-exports.all = function(selector, el){
-  el = el || document;
-  return el.querySelectorAll(selector);
-};
-
-exports.engine = function(obj){
-  if (!obj.one) throw new Error('.one callback required');
-  if (!obj.all) throw new Error('.all callback required');
-  one = obj.one;
-  exports.all = obj.all;
-  return exports;
-};
-
-}, {}],
-7: [function(require, module, exports) {
+}, {"query":5,"component-query":5}],
+10: [function(require, module, exports) {
 module.exports=dataset;
 
 /*global document*/
@@ -1351,4 +1394,7 @@ function dataset(node, attr, value) {
   return self;
 }
 
+}, {}],
+4: [function(require, module, exports) {
+module.exports = [{"name":"autocomplete.js","code":"\n/**\n * Module dependencies.\n */\n\nvar rndid = require('stephenmathieson/rndid');\nvar Emitter = require('component/emitter');\nvar classes = require('component/classes');\nvar events = require('component/events');\nvar data = require('code42day/dataset');\nvar query = require('component/query');\n\n/**\n * Define constants.\n */\n\nvar INPUT_SELECTOR = 'input[type=\"text\"]';\n\n/**\n * Expose `AutoComplete`.\n */\n\nmodule.exports = AutoComplete;\n\n/**\n * Creates a new `AutoComplete`.\n *\n * @param {HTMLElement} el - a type=\"text\" input, or parent thereof\n */\n\nfunction AutoComplete(el) {\n  if (!el) {\n    throw new Error('\"el\" required');\n  }\n  else if (el.nodeType != 1) {\n    throw new Error('\"el\" must be an element');\n  }\n\n  var input = query(INPUT_SELECTOR, el.parentNode);\n  if (!input) {\n    throw new Error('\"el\" must contain an ' + INPUT_SELECTOR);\n  }\n\n  var self = this;\n  this._combobox = new Combobox(input)\n    .on('focus', function () {\n      // self._list.show();\n    })\n    .on('blur', function () {\n      self._list.hide();\n    })\n    .on('keypress', function (newVal) {\n      if (newVal.length) {\n        self.update(newVal);\n      }\n    })\n    .on('select', function (dir) {\n      self.clearSelection();\n      var i;\n\n      switch (dir) {\n        case 'prev':\n          var prev = self._list._selectedIndex - 1;\n          i = prev < 0\n            ? self._list._items.length - 1\n            : prev;\n          break;\n        case 'next':\n          var next = self._list._selectIndex + 1;\n          i = next > self._list._items.length - 1\n            ? 0\n            : next;\n          break;\n      }\n      self._list._items[i].select();\n    });\n}\n\n/**\n * Mixin `Emitter`.\n */\n\nEmitter(AutoComplete.prototype);\n\n/**\n * Gets, or sets, the `#options` for this `AutoComplete` widget.\n *\n * @param  {Array} options\n * @return {AutoComplete}\n */\n\nAutoComplete.prototype.options = function (options) {\n  if (arguments.length > 0 && options.length) {\n    this._list = new List(options);\n    return this;\n  }\n  return this._items;\n};\n\n/**\n * Renders the `AutoComplete` widget.\n *\n * @return {AutoComplete}\n */\n\nAutoComplete.prototype.render = function () {\n  var autocomplete = this;;\n  this._list.render().hide();\n  this._list._items.forEach(function (item) {\n    item.appendTo(autocomplete._list.listbox);\n  });\n\n  var parent = this._combobox.el.parentNode;\n  var listEl = this._list.el;\n  var target = this._combobox.el.nextSibling;\n  parent.insertBefore(listEl, target);\n\n  return this;\n};\n\n/**\n * Updates the suggestions based on the new input `val`.\n *\n * @param  {String} val\n * @return {AutoComplete}\n */\n\nAutoComplete.prototype.update = function (val) {\n  var list = this._list;\n  var items = this._list._items;\n  var matches = [];\n\n  items.forEach(function (item) {\n    var itemName = item._name.toLowerCase();\n    var prefix = itemName.substr(0, val.length);\n\n    var isPrefixMatch = prefix == val.toLowerCase();\n    var isSubstrMatch = ~itemName.indexOf(val.toLowerCase());\n\n    if (isPrefixMatch || isSubstrMatch) {\n      matches.push(item);\n      item.show();\n    }\n    else {\n      item.hide();\n    }\n  });\n\n  this.clearSelection();\n\n  if (matches.length) {\n    this.getItem(matches[0]).select();\n    list.show();\n  }\n  else {\n    list.hide();\n  }\n\n  return this;\n};\n\nAutoComplete.prototype.clearSelection = function () {\n  this._list._items.forEach(function (item) {\n    item.deselect();\n  });\n};\n\nAutoComplete.prototype.getItem = function (name) {\n  var i = this._list._items.indexOf(name);\n  return this._list._items[i];\n};\n\n/**\n * Creates a new `Combobox`.\n *\n * @param {HTMLElement} el - a type=\"text\" input\n */\n\nfunction Combobox(el) {\n  this.el = el;\n  this.el.setAttribute('role', 'combobox');\n  this.el.setAttribute('autocomplete', 'off');\n\n  this.events = events(this.el, this);\n  this.events.bind('keyup');\n  this.events.bind('focus');\n  this.events.bind('blur');\n}\n\n/**\n * Mixin `Emitter`.\n */\n\nEmitter(Combobox.prototype);\n\n/**\n * Handles 'keyup' events on the `Combobox#el`.\n *\n * @param  {Event} e\n * @return {Combobox}\n */\n\nCombobox.prototype.onkeyup = function (e) {\n  var key = e.which || e.keyCode;\n\n  switch (key) {\n    case 38: // Up arrow\n      this.emit('select', 'prev');\n      break;\n    case 40: // Down arrow\n      this.emit('select', 'next');\n      break;\n    case 9:  // Tab\n    case 16: // Shift\n    case 13: // Enter\n      console.log('Tab, Enter, Shift');\n      break;\n    default:\n      this.emit('keypress', this.el.value);\n  }\n\n  return this;\n};\n\nCombobox.prototype.onfocus = function () {\n  this.emit('focus');\n};\n\nCombobox.prototype.onblur = function () {\n  this.emit('blur');\n};\n\n/**\n * Creates a `List`.\n *\n * @param {Array} options\n */\n\nfunction List(options) {\n  var items = this._items = [];\n\n  options.forEach(function (name) {\n    var item = new Item(name);\n    items.push(item);\n  });\n}\n\n/**\n * Mixin `Emitter`.\n */\n\nEmitter(List.prototype);\n\nList.prototype.render = function () {\n  this.el = document.createElement('div');\n  classes(this.el).add('listbox-container');\n\n  this.listbox = document.createElement('ul');\n  this.listbox.setAttribute('role', 'listbox');\n  this.el.appendChild(this.listbox);\n\n  return this;\n};\n\n/**\n * Appends this List's `#el` to a given `target` element.\n *\n * @param  {HTEMLElement} target\n * @return {List}\n */\n\nList.prototype.appendTo = function (target) {\n  target.appendChild(this.el);\n  return this;\n};\n\nList.prototype.show = function () {\n  classes(this.el).remove('hidden');\n  this.el.removeAttribute('aria-hidden');\n};\n\nList.prototype.hide = function () {\n  classes(this.el).add('hidden');\n  this.el.setAttribute('aria-hidden', 'true');\n};\n\n/**\n * Creates a new `Item`.\n *\n * @param {String} name\n */\n\nfunction Item(name) {\n  this._name = name;\n  this.el = document.createElement('li');\n  this.el.setAttribute('role', 'option');\n  this.el.innerHTML = name;\n  data(this.el, 'name', name);\n}\n\n/**\n * Mixin `Emitter`.\n */\n\nEmitter(Item.prototype);\n\n/**\n * Appends this Item's `#el` to a given `target` element.\n *\n * @param  {HTMLElement} target\n * @return {Item}\n */\n\nItem.prototype.appendTo = function (target) {\n  target.appendChild(this.el);\n  return this;\n};\n\nItem.prototype.show = function () {\n  classes(this.el).remove('hidden');\n  this.el.removeAttribute('aria-hidden');\n};\n\nItem.prototype.hide = function () {\n  classes(this.el).add('hidden');\n  this.el.setAttribute('aria-hidden', 'true');\n};\n\nItem.prototype.select = function () {\n  this.el.setAttribute('aria-selected', 'true');\n  classes(this.el).add('selected');\n  this.emit('selected');\n};\n\nItem.prototype.deselect = function () {\n  this.el.removeAttribute('aria-selected');\n  classes(this.el).remove('selected');\n};\n"},{"name":"index.jade","code":"\nextends ../layout\n\nblock vars\n  - var heading = 'Auto Complete'\n\nblock content\n  .panel.panel-default\n    .panel-heading\n      h2 Example: Auto Complete\n    \n    .panel-body\n      p TODO\n      //- a(href=\"#before\") Before\n      \n      //- form\n        //- label(for=\"character-input\") Favorite Seinfeld Character\n        //- .input-group\n          //- input#character-input(type=\"text\")\n    \n      //- a(href=\"#after\") After\n\nblock scripts\n  //- script(src=\"index.js\")\n\nblock styles\n  link(rel=\"stylesheet\" href=\"index.css\")\n"},{"name":"index.js","code":"\nvar displaySource = require('../../lib/display-source');\nvar AutoComplete = require('./autocomplete');\n\nvar inputEl = document.getElementById('character-input');\n\nvar autoComplete = new AutoComplete(inputEl)\n  .options([\n    'Ruthie Cohen',\n    'Newman',\n    'Frank Costanza',\n    'Estelle Costanza',\n    'Susan Ross',\n    'Morty Seinfeld',\n    'Helen Seinfeld',\n    'Jacopo \"J\" Peterman',\n    'George Steinbrenner',\n    'Uncle Leo',\n    'Matt Wilhelm',\n    'David Puddy',\n    'Mr. Lippman'\n    // TODO add more\n  ])\n  .render();\n\ndisplaySource(require('./source'));\n"},{"name":"index.styl","code":"\n@require '../global'\n\n.hidden\n  display none\n\n.bold\n  font-weight 600\n\n.block\n  display block\n\n#character-input\n  width 300px\n  padding 0.3em 0.5em\n\n.listbox-container\n  position relative\n\n  ul\n    position absolute\n    width 100%\n    background-color #fff\n    padding .5em\n    border 1px solid #ccc\n\n    li\n      padding .2em .5em\n      &.selected\n        background-color #eee\n"}];
 }, {}]}, {}, {"1":""})

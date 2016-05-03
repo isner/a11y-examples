@@ -18,6 +18,7 @@ var BOWER = 'bower_components';
 var EXAMPLES = 'examples';
 var INDEX = 'index.js';
 var DIST = 'dist';
+var SRC_FILE = 'source.js';
 
 /**
  * `default` task.
@@ -28,7 +29,8 @@ gulp.task('default', [
   'bower',
   'views',
   'styles',
-  'scripts'
+  'scripts',
+  'source'
 ]);
 
 /**
@@ -73,6 +75,39 @@ gulp.task('styles', function () {
 });
 
 /**
+ * Create client module "source.js" containing array
+ * of the example' source files.
+ */
+
+gulp.task('source', function () {
+  var exampleDirs = fs.readdirSync(EXAMPLES);
+
+  exampleDirs.forEach(function (exampleDir) {
+
+    var entryPath = path.join(__dirname, EXAMPLES, exampleDir, INDEX);
+
+    if (fs.existsSync(entryPath)) {
+
+      var pathToSrc = path.join(__dirname, EXAMPLES, exampleDir);
+
+      var srcArr = fs.readdirSync(pathToSrc)
+      .filter((file) => {
+        var notSourceJs = file != SRC_FILE;
+        return notSourceJs;
+      })
+      .map((file) => {
+        var srcFile = path.join(__dirname, EXAMPLES, exampleDir, file);
+        var data = fs.readFileSync(srcFile, 'utf-8');
+        return { name: file, code: data };
+      });
+
+      var str = 'module.exports = ' + JSON.stringify(srcArr) + ';';
+      fs.writeFileSync(path.join(pathToSrc, SRC_FILE), str);
+    }
+  });
+});
+
+/**
  * Use duo to traverse and build js modules
  * for each example.
  */
@@ -86,20 +121,6 @@ gulp.task('scripts', function () {
 
     if (fs.existsSync(entryPath)) {
 
-      // Create client module "source.js" containing array
-      // of the example' source files.
-      var pathToSrc = path.join(__dirname, EXAMPLES, exampleDir);
-      var srcArr = fs.readdirSync(pathToSrc)
-      .map((file) => {
-        var data = fs.readFileSync(path.join(__dirname, EXAMPLES, exampleDir, file), 'utf-8');
-        return {
-          name: file,
-          code: data
-        };
-      });
-      var str = 'module.exports = ' + JSON.stringify(srcArr) + ';';
-      fs.writeFileSync(path.join(pathToSrc, 'source.js'), str);
-
       new Duo(__dirname)
       .entry(path.join(EXAMPLES, exampleDir, INDEX))
       .copy(true)
@@ -108,13 +129,8 @@ gulp.task('scripts', function () {
 
         var target = path.join(DIST, exampleDir, INDEX);
 
-        fs.ensureFile(target, function (err) {
-          if (err) throw err;
-
-          fs.writeFile(target, data, function (err) {
-            if (err) throw err;
-          });
-        });
+        fs.ensureFileSync(target);
+        fs.writeFileSync(target, data.code);
       });
     }
   });
@@ -127,6 +143,6 @@ gulp.task('scripts', function () {
 gulp.task('watch', function () {
   gulp.watch('examples/**/index.jade', ['views']);
   gulp.watch('examples/**/index.styl', ['styles']);
-  gulp.watch('examples/**/*.{js,html}', ['scripts']);
+  gulp.watch('examples/**/*.{js,html}', ['source', 'scripts']);
   gulp.watch('lib/*', ['scripts']);
 });

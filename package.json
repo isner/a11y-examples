@@ -18,7 +18,7 @@
   "dependencies": {},
   "devDependencies": {
     "bower": "^1.5.2",
-    "duo": "0.8.4",
+    "duo": "^0.15.6",
     "fs-extra": "^0.18.4",
     "gulp": "^3.8.11",
     "gulp-jade": "^1.0.1",

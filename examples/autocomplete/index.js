@@ -1,4 +1,5 @@
 
+var displaySource = require('../../lib/display-source');
 var AutoComplete = require('./autocomplete');
 
 var inputEl = document.getElementById('character-input');
@@ -22,4 +23,4 @@ var autoComplete = new AutoComplete(inputEl)
   ])
   .render();
 
-console.log(autoComplete);
+displaySource(require('./source'));

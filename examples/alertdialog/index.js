@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+var displaySource = require('../../lib/display-source');
 var DialogModal = require('../../lib/dialog-modal/dialog-modal.js');
 var query = require('component/query');
 
@@ -24,4 +25,4 @@ new DialogModal(trigger, content, title, true);
  * Display the source files.
  */
 
-require('../../lib/display-source')(require('./source'));
+displaySource(require('./source'));

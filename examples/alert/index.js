@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+var displaySource = require('../../lib/display-source');
 var query = require('component/query');
 var Alert = require('./alert');
 
@@ -46,4 +47,4 @@ form.addEventListener('submit', function (e) {
  * Display the source files.
  */
 
-require('../../lib/display-source')(require('./source'));
+displaySource(require('./source'));

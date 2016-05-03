@@ -24,7 +24,7 @@ module.exports = Expanded;
 /**
  * Create an expandable trigger/area widget.
  *
- * @param {HTMLElement} trigger - should be BUTTON or ANCHOR
+ * @param {HTMLElement} trigger - SHOULD be button or anchor
  * @param {HTMLElement} area
  * @param {Object} [opts] - see CONFIGURATION below
  * @api public
@@ -53,7 +53,7 @@ module.exports = Expanded;
  *
  * NOTE
  *
- * `trigger` SHOULD be a `<button>` or `<a>` because
+ * `trigger` SHOULD be a button or anchor because
  * these element types fire a "click" event on Enter
  * (and/or Space) presses. Otherwise, only mouse clicks
  * will activate the trigger.

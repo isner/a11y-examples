@@ -77,45 +77,45 @@ Pair.prototype.onclick = function (e) {
 
 Pair.prototype.onkeydown = function (e) {
   var key = e.which || e.keycode;
-  // Arrow pressed
-  if (~[37, 38, 39, 40].indexOf(key)) {
-    e.preventDefault();
-    // Left/Up arrow pressed
-    if (~[37, 38].indexOf(key)) {
-      this.emit('select', { val: 'prev' });
-    }
-    // Right/Down arrow pressed
-    else if (~[39, 40].indexOf(key)) {
-      this.emit('select', { val: 'next' });
-    }
-  }
-  // Enter/Space pressed
-  else if (~[13, 32].indexOf(key)) {
-    this.toggle();
-  }
-  // Home pressed
-  else if (key == 36) {
-    e.preventDefault();
-    this.emit('select', { val: 'first' });
-  }
-  // End pressed
-  else if (key == 35) {
-    e.preventDefault();
-    this.emit('select', { val: 'last' });
-  }
-  // Tab pressed
-  else if (key === 9 && !e.shiftKey && !this.panel._isHidden) {
-    e.preventDefault();
-    var panel = this.panel;
 
-    if (this.config.suppressMain) {
-      suppressMain(function () {
-        panel.focusTemp();
-      }, 100);
-    }
-    else {
-      panel.focusTemp();
-    }
+  switch (key) {
+    case 37: // Left
+    case 38: // Up
+      e.preventDefault();
+      this.emit('select', { val: 'prev' });
+      break;
+    case 39: // Right
+    case 40: // Down
+      e.preventDefault();
+      this.emit('select', { val: 'next' });
+      break;
+    case 13: // Enter
+    case 32: // Space
+      e.preventDefault();
+      this.toggle();
+      break;
+    case 35: // End
+      e.preventDefault();
+      this.emit('select', { val: 'last' });
+      break;
+    case 36: // Home
+      e.preventDefault();
+      this.emit('select', { val: 'first' });
+      break;
+    case 9: // Tab
+      if (!e.shiftKey && !this.panel._isHidden) {
+        e.preventDefault();
+
+        if (this.config.suppressMain) {
+          suppressMain(function () {
+            this.panel.focusTemp();
+          }, 100);
+        }
+        else {
+          this.panel.focusTemp();
+        }
+      }
+      break;
   }
   return this;
 };

@@ -3,7 +3,7 @@
  * Module dependencies.
  */
 
-require('../../lib/display-source')(require('./source'));
+var displaySource = require('../../lib/display-source');
 var validator = require('chriso/validator.js');
 var query = require('component/query');
 var Form = require('./form');
@@ -85,3 +85,5 @@ new Form(formEl, {
 .on('valid-submission', function () {
   this.summary.el.innerHTML = 'Form submitted without errors.';
 });
+
+displaySource(require('./source'));

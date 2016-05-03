@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+var displaySource = require('../../lib/display-source');
 var Megamenu = require('./megamenu');
 
 /**
@@ -17,4 +18,4 @@ menu = new Megamenu(menu);
  * Display the source files.
  */
 
-require('../../lib/display-source')(require('./source'));
+displaySource(require('./source'));

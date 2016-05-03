@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+var displaySource = require('../../lib/display-source');
 var Accordion = require('./accordion');
 var query = require('component/query');
 
@@ -23,4 +24,4 @@ new Accordion(el, {
  * Display the source files.
  */
 
-require('../../lib/display-source')(require('./source'));
+displaySource(require('./source'));
