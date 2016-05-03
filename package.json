@@ -5,8 +5,9 @@
   "description": "Examples of accessible widgets and design patterns",
   "main": "index.js",
   "scripts": {
+    "build": "./node_modules/.bin/gulp",
+    "postinstall": "bower install",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/.bin/gulp"
   },
   "keywords": [
     "accessibility",
