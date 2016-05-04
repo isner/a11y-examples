@@ -197,7 +197,7 @@ function displaySource(sourceArr) {
   sectionHeading.className = 'page-header';
   cage.appendChild(sectionHeading);
 
-  sourceArr.forEach((file) => {
+  sourceArr.forEach(function (file) {
     var isSourceJs = file.name == 'source.js';
     var isHtml = ~file.name.search('.html');
     var isJade = ~file.name.search('.jade');
