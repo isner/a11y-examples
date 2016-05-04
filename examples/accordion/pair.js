@@ -77,6 +77,7 @@ Pair.prototype.onclick = function (e) {
 
 Pair.prototype.onkeydown = function (e) {
   var key = e.which || e.keycode;
+  var pair = this;
 
   switch (key) {
     case 37: // Left
@@ -108,7 +109,7 @@ Pair.prototype.onkeydown = function (e) {
 
         if (this.config.suppressMain) {
           suppressMain(function () {
-            this.panel.focusTemp();
+            pair.panel.focusTemp();
           }, 100);
         }
         else {
