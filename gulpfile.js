@@ -124,6 +124,7 @@ gulp.task('scripts', function () {
       new Duo(__dirname)
       .entry(path.join(EXAMPLES, exampleDir, INDEX))
       .copy(true)
+      .token(require('./github-token'))
       .run(function (err, data) {
         if (err) throw err;
 

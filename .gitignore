@@ -4,3 +4,4 @@ build
 components
 node_modules
 examples/*/source.js
+github-token.js
