@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+var github = require('netrc')()['api.github.com'] || 'foo';
 var stylus = require('gulp-stylus');
 var jade = require('gulp-jade');
 var fs = require('fs-extra');
@@ -124,7 +125,7 @@ gulp.task('scripts', function () {
       new Duo(__dirname)
       .entry(path.join(EXAMPLES, exampleDir, INDEX))
       .copy(true)
-      .token(require('./github-token'))
+      .token(github.password)
       .run(function (err, data) {
         if (err) throw err;
 
