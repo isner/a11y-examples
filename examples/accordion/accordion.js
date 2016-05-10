@@ -40,7 +40,9 @@ function Accordion(el, config) {
     var pair = self.pairs[i] = new Pair(el, config, i)
       .collapse()
       .on('select', function (data) {
-        self.updateIndex(data.val);
+        var val = data ? data.val : i;
+        console.log(val);
+        self.updateIndex(val);
       });
     var tabindex = i === 0 ? '0' : '-1';
     pair.tab.el.setAttribute('tabindex', tabindex);

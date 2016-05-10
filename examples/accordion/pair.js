@@ -63,6 +63,7 @@ Emitter(Pair.prototype);
  */
 
 Pair.prototype.onclick = function (e) {
+  this.emit('select');
   this.toggle();
   return this;
 };
