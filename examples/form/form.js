@@ -24,7 +24,7 @@ function Form(el, config) {
 
   var form = this;
   this.summary = new Summary(this.config.summarySelector)
-    .on('jump-to-error', form.focusFirstError);
+    .on('jump-to-error', form.focusFirstError.bind(form));
 
   this.events = events(this.form, this);
   this.events.bind('submit', 'validate');
