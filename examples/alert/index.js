@@ -39,7 +39,6 @@ form.addEventListener('submit', function (e) {
       .type('success');
   }
 
-  input.select();
   alert.show();
 });
 
